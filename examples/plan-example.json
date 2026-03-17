@@ -1,0 +1,79 @@
+{
+  "id": "2026-03-17_jwt-auth-express",
+  "created": "2026-03-17T10:00:00",
+  "request": "Add JWT authentication to the Express app",
+  "complexity": "complex",
+  "fast_track": false,
+  "status": "in_progress",
+  "approach": "Install bcrypt and jsonwebtoken, extend User model with password field, create auth routes and middleware, mount in app.js, run tests",
+  "checklist": [
+    {
+      "task": "Install bcrypt and jsonwebtoken",
+      "agent": "agent_builder",
+      "spawn_type": "temporal",
+      "status": "completed",
+      "started_at": "2026-03-17T10:01:00",
+      "completed_at": "2026-03-17T10:02:00",
+      "retries": 0,
+      "notes": null
+    },
+    {
+      "task": "Add password field to User model",
+      "agent": "model_agent",
+      "spawn_type": "temporal",
+      "status": "completed",
+      "started_at": "2026-03-17T10:02:00",
+      "completed_at": "2026-03-17T10:04:00",
+      "retries": 0,
+      "notes": null
+    },
+    {
+      "task": "Create POST /auth/register and POST /auth/login routes",
+      "agent": "routes_agent",
+      "spawn_type": "temporal",
+      "status": "in_progress",
+      "started_at": "2026-03-17T10:04:00",
+      "completed_at": null,
+      "retries": 0,
+      "notes": null
+    },
+    {
+      "task": "Create Bearer token middleware",
+      "agent": "middleware_agent",
+      "spawn_type": "temporal",
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "retries": 0,
+      "notes": null
+    },
+    {
+      "task": "Mount auth router in app.js",
+      "agent": "mount_agent",
+      "spawn_type": "temporal",
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "retries": 0,
+      "notes": null
+    },
+    {
+      "task": "Run test suite",
+      "agent": "test_agent",
+      "spawn_type": "temporal",
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "retries": 0,
+      "notes": null
+    }
+  ],
+  "score": {
+    "composite": null,
+    "spec_compliance": null,
+    "scope_adherence": null,
+    "technical_correctness": null,
+    "execution_efficiency": null
+  },
+  "pattern_stored": false
+}

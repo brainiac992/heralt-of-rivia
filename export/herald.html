@@ -1,0 +1,1155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HERALD — Universal Agentic Interface Layer</title>
+<style>
+  :root {
+    --navy:      #0F2044;
+    --navy-mid:  #1E3A6E;
+    --blue:      #2563EB;
+    --cyan:      #06B6D4;
+    --cyan-light:#E0F7FA;
+    --amber:     #F59E0B;
+    --amber-light:#FEF3C7;
+    --green:     #10B981;
+    --green-light:#D1FAE5;
+    --red:       #EF4444;
+    --red-light: #FEE2E2;
+    --purple:    #8B5CF6;
+    --purple-light:#EDE9FE;
+    --gray-50:   #F8FAFC;
+    --gray-100:  #F1F5F9;
+    --gray-200:  #E2E8F0;
+    --gray-400:  #94A3B8;
+    --gray-600:  #475569;
+    --gray-800:  #1E293B;
+    --white:     #FFFFFF;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--gray-800);
+    background: var(--gray-50);
+  }
+
+  /* ── COVER ── */
+  .cover {
+    background: linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 60%, #1a4080 100%);
+    color: white;
+    padding: 100px 80px 80px;
+    position: relative;
+    overflow: hidden;
+    min-height: 420px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+  }
+  .cover::before {
+    content: '';
+    position: absolute;
+    top: -120px; right: -120px;
+    width: 500px; height: 500px;
+    border-radius: 50%;
+    background: rgba(6,182,212,0.08);
+  }
+  .cover::after {
+    content: '';
+    position: absolute;
+    bottom: -80px; left: 40%;
+    width: 340px; height: 340px;
+    border-radius: 50%;
+    background: rgba(37,99,235,0.10);
+  }
+  .cover-badge {
+    display: inline-block;
+    background: rgba(6,182,212,0.2);
+    border: 1px solid rgba(6,182,212,0.4);
+    color: var(--cyan);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    padding: 6px 14px;
+    border-radius: 20px;
+    margin-bottom: 28px;
+    width: fit-content;
+  }
+  .cover h1 {
+    font-size: 80px;
+    font-weight: 800;
+    letter-spacing: -3px;
+    line-height: 1;
+    margin-bottom: 18px;
+    position: relative;
+    z-index: 1;
+  }
+  .cover h1 span { color: var(--cyan); }
+  .cover .cover-sub {
+    font-size: 22px;
+    color: rgba(255,255,255,0.7);
+    font-weight: 300;
+    margin-bottom: 40px;
+    position: relative;
+    z-index: 1;
+  }
+  .cover-pills {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    position: relative;
+    z-index: 1;
+  }
+  .cover-pill {
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: white;
+    padding: 7px 16px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  /* ── CONTENT WRAPPER ── */
+  .content { max-width: 1000px; margin: 0 auto; padding: 60px 40px; }
+
+  /* ── SECTION ── */
+  .section { margin-bottom: 72px; }
+  .section-label {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  .section-label .dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: var(--cyan);
+    flex-shrink: 0;
+  }
+  .section-label h2 {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--navy);
+    letter-spacing: -0.5px;
+  }
+  .section-divider {
+    height: 2px;
+    background: linear-gradient(90deg, var(--cyan), transparent);
+    margin-bottom: 32px;
+  }
+
+  p { margin-bottom: 14px; color: var(--gray-600); font-size: 15px; }
+
+  /* ── STAT CARDS ── */
+  .stat-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin: 28px 0;
+  }
+  .stat-card {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    border: 1px solid var(--gray-200);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+    text-align: center;
+  }
+  .stat-card .stat-num {
+    font-size: 36px;
+    font-weight: 800;
+    color: var(--navy);
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+  .stat-card .stat-num span { color: var(--cyan); }
+  .stat-card .stat-label {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--gray-400);
+  }
+
+  /* ── CALLOUT ── */
+  .callout {
+    background: linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 100%);
+    color: white;
+    border-radius: 14px;
+    padding: 28px 32px;
+    margin: 28px 0;
+  }
+  .callout p { color: rgba(255,255,255,0.8); margin: 0; font-size: 15px; }
+  .callout strong { color: var(--cyan); }
+
+  /* ── ARCH DIAGRAM CONTAINER ── */
+  .diagram-card {
+    background: white;
+    border-radius: 16px;
+    padding: 40px;
+    border: 1px solid var(--gray-200);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+    margin: 28px 0;
+    text-align: center;
+  }
+  .diagram-card svg { max-width: 100%; height: auto; }
+  .diagram-caption {
+    margin-top: 14px;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--gray-400);
+    font-weight: 600;
+  }
+
+  /* ── AGENT TABLE ── */
+  .agent-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin: 24px 0;
+  }
+  .agent-card {
+    background: white;
+    border-radius: 12px;
+    padding: 22px 24px;
+    border: 1px solid var(--gray-200);
+    border-top: 4px solid var(--navy);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  }
+  .agent-card.dominant { border-top-color: var(--navy); }
+  .agent-card.temporal { border-top-color: var(--cyan); }
+  .agent-card .agent-name {
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 4px;
+  }
+  .agent-card .agent-badge {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 10px;
+    margin-bottom: 12px;
+  }
+  .agent-card.dominant .agent-badge { background: var(--navy); color: white; }
+  .agent-card.temporal .agent-badge { background: var(--cyan-light); color: #0891b2; }
+  .agent-card .agent-scope {
+    font-size: 13px;
+    color: var(--gray-600);
+    line-height: 1.6;
+  }
+
+  /* ── FAST TRACK ── */
+  .fast-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin: 24px 0;
+  }
+  .fast-card {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    border: 1px solid var(--gray-200);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  }
+  .fast-card .fc-icon {
+    width: 44px; height: 44px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+    margin-bottom: 14px;
+  }
+  .fast-card .fc-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 8px;
+  }
+  .fast-card .fc-desc {
+    font-size: 13px;
+    color: var(--gray-600);
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  /* ── COMPLEXITY TABLE ── */
+  .complexity-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 8px;
+    margin: 20px 0;
+  }
+  .complexity-table th {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--gray-400);
+    padding: 0 16px 8px;
+    text-align: left;
+  }
+  .complexity-table td {
+    background: white;
+    padding: 16px;
+    font-size: 14px;
+    border: 1px solid var(--gray-200);
+  }
+  .complexity-table td:first-child {
+    border-radius: 10px 0 0 10px;
+    border-right: none;
+    font-weight: 700;
+    width: 110px;
+  }
+  .complexity-table td:nth-child(2) {
+    border-left: none;
+    border-right: none;
+    color: var(--gray-600);
+  }
+  .complexity-table td:last-child {
+    border-radius: 0 10px 10px 0;
+    border-left: none;
+    font-weight: 600;
+    width: 200px;
+  }
+  .complexity-table tr.simple td:first-child { color: var(--green); border-left: 3px solid var(--green); }
+  .complexity-table tr.moderate td:first-child { color: var(--amber); border-left: 3px solid var(--amber); }
+  .complexity-table tr.complex td:first-child { color: var(--red); border-left: 3px solid var(--red); }
+
+  /* ── LAYER CARDS ── */
+  .layers-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin: 24px 0;
+  }
+  .layer-card {
+    background: white;
+    border-radius: 14px;
+    padding: 28px 32px;
+    border: 1px solid var(--gray-200);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    display: grid;
+    grid-template-columns: 80px 1fr;
+    gap: 24px;
+    align-items: start;
+  }
+  .layer-num-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding-top: 4px;
+  }
+  .layer-num-circle {
+    width: 52px; height: 52px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+    font-weight: 800;
+    color: white;
+    flex-shrink: 0;
+  }
+  .layer-num-label {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--gray-400);
+    text-align: center;
+  }
+  .layer-content h3 {
+    font-size: 17px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 4px;
+  }
+  .layer-content .layer-owner {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--cyan);
+    margin-bottom: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .layer-content ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .layer-content ul li {
+    font-size: 13.5px;
+    color: var(--gray-600);
+    padding: 4px 0 4px 20px;
+    position: relative;
+    line-height: 1.5;
+  }
+  .layer-content ul li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: var(--gray-400);
+    font-size: 12px;
+  }
+  .l1 .layer-num-circle { background: linear-gradient(135deg, #6366f1, #8b5cf6); }
+  .l2 .layer-num-circle { background: linear-gradient(135deg, #2563eb, #06b6d4); }
+  .l3 .layer-num-circle { background: linear-gradient(135deg, #0f766e, #10b981); }
+  .l4 .layer-num-circle { background: linear-gradient(135deg, #d97706, #f59e0b); }
+  .l5 .layer-num-circle { background: linear-gradient(135deg, #dc2626, #f97316); }
+  .l6 .layer-num-circle { background: linear-gradient(135deg, #0f2044, #1e3a6e); }
+
+  /* ── SCORECARD ── */
+  .score-cards {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin: 24px 0;
+  }
+  .score-card {
+    background: white;
+    border-radius: 12px;
+    padding: 20px 16px;
+    border: 1px solid var(--gray-200);
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  }
+  .score-card .sc-pct {
+    font-size: 32px;
+    font-weight: 800;
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+  .score-card .sc-name {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .score-card .sc-how {
+    font-size: 11px;
+    color: var(--gray-400);
+    line-height: 1.4;
+  }
+  .score-card:nth-child(1) .sc-pct { color: var(--navy); }
+  .score-card:nth-child(2) .sc-pct { color: var(--blue); }
+  .score-card:nth-child(3) .sc-pct { color: var(--green); }
+  .score-card:nth-child(4) .sc-pct { color: var(--amber); }
+
+  .threshold-banner {
+    background: linear-gradient(135deg, var(--green), #059669);
+    color: white;
+    border-radius: 12px;
+    padding: 20px 28px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin: 20px 0;
+  }
+  .threshold-banner .tb-num {
+    font-size: 48px;
+    font-weight: 800;
+    line-height: 1;
+    flex-shrink: 0;
+  }
+  .threshold-banner .tb-text strong { display: block; font-size: 15px; margin-bottom: 4px; }
+  .threshold-banner .tb-text p { color: rgba(255,255,255,0.8); margin: 0; font-size: 13px; }
+
+  /* ── RULES ── */
+  .rules-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin: 24px 0;
+  }
+  .rule-card {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    border: 1px solid var(--gray-200);
+    border-left: 4px solid var(--navy);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+  }
+  .rule-card .rc-title {
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .rule-card .rc-body {
+    font-size: 12.5px;
+    color: var(--gray-600);
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  /* ── SCHEMA BLOCKS ── */
+  .schema-card {
+    background: var(--navy);
+    border-radius: 14px;
+    overflow: hidden;
+    margin: 16px 0;
+  }
+  .schema-header {
+    background: rgba(255,255,255,0.06);
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .schema-dot { width: 10px; height: 10px; border-radius: 50%; }
+  .schema-header .sh-title {
+    font-size: 12px;
+    font-weight: 700;
+    color: rgba(255,255,255,0.5);
+    font-family: 'Courier New', monospace;
+    letter-spacing: 1px;
+  }
+  .schema-body {
+    padding: 20px 24px;
+    font-family: 'Courier New', monospace;
+    font-size: 12.5px;
+    line-height: 1.7;
+    color: #e2e8f0;
+    white-space: pre;
+    overflow-x: auto;
+  }
+  .schema-body .key { color: #7dd3fc; }
+  .schema-body .str { color: #86efac; }
+  .schema-body .num { color: #fcd34d; }
+  .schema-body .bool { color: #f9a8d4; }
+  .schema-body .comment { color: #64748b; font-style: italic; }
+
+  /* ── FOOTER ── */
+  .footer {
+    background: var(--navy);
+    color: rgba(255,255,255,0.4);
+    text-align: center;
+    padding: 32px 40px;
+    font-size: 12px;
+    letter-spacing: 1px;
+    margin-top: 0;
+  }
+  .footer strong { color: rgba(255,255,255,0.7); }
+
+  /* ── PRINT ── */
+  @media print {
+    body { background: white; }
+    .cover { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .layer-num-circle, .callout, .threshold-banner, .schema-card, .footer { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .page-break { page-break-before: always; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ══════════ COVER ══════════ -->
+<div class="cover">
+  <div class="cover-badge">System Design Document</div>
+  <h1>HER<span>ALD</span></h1>
+  <div class="cover-sub">Universal Agentic Interface Layer</div>
+  <div class="cover-pills">
+    <div class="cover-pill">Human-to-machine translation</div>
+    <div class="cover-pill">Self-improving</div>
+    <div class="cover-pill">Cross-environment</div>
+    <div class="cover-pill">Open source · MIT</div>
+  </div>
+</div>
+
+<div class="content">
+
+<!-- ══════════ WHAT IS HERALD ══════════ -->
+<div class="section">
+  <div class="section-label"><div class="dot"></div><h2>What is HERALD?</h2></div>
+  <div class="section-divider"></div>
+
+  <p>HERALD is the central orchestrator for all agentic task execution. It is the only agent with cross-system awareness. Every other agent has a single defined scope and communicates exclusively with HERALD — no agent communicates with another agent directly.</p>
+  <p>HERALD sits between human input and every downstream agent. It runs discovery, manages planning, controls the agent lifecycle, dispatches work, tracks execution state, and learns from every execution.</p>
+
+  <div class="stat-row">
+    <div class="stat-card"><div class="stat-num">6</div><div class="stat-label">Pipeline Layers</div></div>
+    <div class="stat-card"><div class="stat-num"><span>95</span>%</div><div class="stat-label">Success Threshold</div></div>
+    <div class="stat-card"><div class="stat-num">3</div><div class="stat-label">Fast-track Modes</div></div>
+    <div class="stat-card"><div class="stat-num"><span>∞</span></div><div class="stat-label">Self-improving</div></div>
+  </div>
+</div>
+
+<!-- ══════════ ARCHITECTURE ══════════ -->
+<div class="section">
+  <div class="section-label"><div class="dot"></div><h2>Architecture</h2></div>
+  <div class="section-divider"></div>
+  <p>HERALD operates as a hub-and-spoke orchestrator. All communication routes through HERALD. No exceptions — no agent ever contacts another agent directly.</p>
+
+  <div class="diagram-card">
+    <svg width="780" height="460" viewBox="0 0 780 460" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="arr-white" markerWidth="12" markerHeight="8" refX="11" refY="4" orient="auto" markerUnits="userSpaceOnUse">
+          <polygon points="0,0 12,4 0,8" fill="#0F2044"/>
+        </marker>
+        <marker id="arr-cyan" markerWidth="12" markerHeight="8" refX="11" refY="4" orient="auto" markerUnits="userSpaceOnUse">
+          <polygon points="0,0 12,4 0,8" fill="#06B6D4"/>
+        </marker>
+        <marker id="arr-navy-back" markerWidth="12" markerHeight="8" refX="1" refY="4" orient="auto" markerUnits="userSpaceOnUse">
+          <polygon points="12,0 0,4 12,8" fill="#0F2044"/>
+        </marker>
+        <linearGradient id="herald-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color:#0F2044"/>
+          <stop offset="100%" style="stop-color:#1E3A6E"/>
+        </linearGradient>
+        <linearGradient id="sa-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color:#2563EB"/>
+          <stop offset="100%" style="stop-color:#06B6D4"/>
+        </linearGradient>
+        <linearGradient id="ab-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color:#0F766E"/>
+          <stop offset="100%" style="stop-color:#10B981"/>
+        </linearGradient>
+        <linearGradient id="ta-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color:#7C3AED"/>
+          <stop offset="100%" style="stop-color:#C084FC"/>
+        </linearGradient>
+        <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
+          <feDropShadow dx="0" dy="6" stdDeviation="10" flood-color="rgba(0,0,0,0.18)"/>
+        </filter>
+      </defs>
+
+      <!-- USER box -->
+      <rect x="310" y="14" width="160" height="50" rx="10" fill="url(#herald-grad)" filter="url(#shadow)"/>
+      <text x="390" y="44" text-anchor="middle" fill="white" font-family="Segoe UI,Arial,sans-serif" font-size="15" font-weight="700" letter-spacing="2">USER</text>
+
+      <!-- Down arrow -->
+      <line x1="390" y1="64" x2="390" y2="128" stroke="#0F2044" stroke-width="2.5" marker-end="url(#arr-white)"/>
+      <!-- Up arrow -->
+      <line x1="397" y1="64" x2="397" y2="128" stroke="#0F2044" stroke-width="2.5" marker-start="url(#arr-navy-back)"/>
+
+      <!-- HERALD centre -->
+      <rect x="210" y="130" width="360" height="72" rx="14" fill="url(#herald-grad)" filter="url(#shadow)"/>
+      <text x="390" y="159" text-anchor="middle" fill="white" font-family="Segoe UI,Arial,sans-serif" font-size="20" font-weight="800" letter-spacing="1">HERALD</text>
+      <text x="390" y="179" text-anchor="middle" fill="rgba(6,182,212,0.9)" font-family="Segoe UI,Arial,sans-serif" font-size="11" font-weight="500">Sole Orchestrator · Hub of All Communication</text>
+      <text x="390" y="194" text-anchor="middle" fill="rgba(255,255,255,0.35)" font-family="Segoe UI,Arial,sans-serif" font-size="10">No agent communicates with another agent directly</text>
+
+      <!-- SA spoke -->
+      <line x1="256" y1="202" x2="118" y2="256" stroke="#06B6D4" stroke-width="2" marker-end="url(#arr-cyan)"/>
+      <line x1="118" y1="256" x2="256" y2="202" stroke="#06B6D4" stroke-width="2" marker-end="url(#arr-cyan)"/>
+
+      <!-- SA box — height=100 so badge sits 24px from bottom -->
+      <rect x="18" y="260" width="196" height="100" rx="14" fill="url(#sa-grad)" filter="url(#shadow)"/>
+      <text x="116" y="292" text-anchor="middle" fill="white" font-family="Segoe UI,Arial,sans-serif" font-size="15" font-weight="800">SA</text>
+      <text x="116" y="312" text-anchor="middle" fill="rgba(255,255,255,0.8)" font-family="Segoe UI,Arial,sans-serif" font-size="11">Systems &amp; Business Analyst</text>
+      <rect x="56" y="328" width="72" height="20" rx="10" fill="rgba(255,255,255,0.25)"/>
+      <text x="92" y="342" text-anchor="middle" fill="white" font-family="Segoe UI,Arial,sans-serif" font-size="10" font-weight="700">DOMINANT</text>
+
+      <!-- Agent Builder spoke -->
+      <line x1="390" y1="202" x2="390" y2="256" stroke="#06B6D4" stroke-width="2" marker-end="url(#arr-cyan)"/>
+      <line x1="390" y1="256" x2="390" y2="202" stroke="#06B6D4" stroke-width="2" marker-end="url(#arr-cyan)"/>
+
+      <!-- Agent Builder box — height=100 -->
+      <rect x="292" y="260" width="196" height="100" rx="14" fill="url(#ab-grad)" filter="url(#shadow)"/>
+      <text x="390" y="292" text-anchor="middle" fill="white" font-family="Segoe UI,Arial,sans-serif" font-size="15" font-weight="800">Agent Builder</text>
+      <text x="390" y="312" text-anchor="middle" fill="rgba(255,255,255,0.8)" font-family="Segoe UI,Arial,sans-serif" font-size="11">Builds agents to spec</text>
+      <rect x="328" y="328" width="72" height="20" rx="10" fill="rgba(255,255,255,0.25)"/>
+      <text x="364" y="342" text-anchor="middle" fill="white" font-family="Segoe UI,Arial,sans-serif" font-size="10" font-weight="700">DOMINANT</text>
+
+      <!-- Task Agents spoke -->
+      <line x1="524" y1="202" x2="662" y2="256" stroke="#06B6D4" stroke-width="2" marker-end="url(#arr-cyan)"/>
+      <line x1="662" y1="256" x2="524" y2="202" stroke="#06B6D4" stroke-width="2" marker-end="url(#arr-cyan)"/>
+
+      <!-- Task Agents box — height=100 -->
+      <rect x="566" y="260" width="196" height="100" rx="14" fill="url(#ta-grad)" filter="url(#shadow)"/>
+      <text x="664" y="292" text-anchor="middle" fill="white" font-family="Segoe UI,Arial,sans-serif" font-size="15" font-weight="800">Task Agents</text>
+      <text x="664" y="312" text-anchor="middle" fill="rgba(255,255,255,0.8)" font-family="Segoe UI,Arial,sans-serif" font-size="11">Execute one defined task</text>
+      <rect x="602" y="328" width="72" height="20" rx="10" fill="rgba(255,255,255,0.25)"/>
+      <text x="638" y="342" text-anchor="middle" fill="white" font-family="Segoe UI,Arial,sans-serif" font-size="10" font-weight="700">TEMPORAL</text>
+    </svg>
+    <div class="diagram-caption">Hub-and-spoke — all routes through HERALD, no exceptions</div>
+  </div>
+
+  <div class="agent-cards">
+    <div class="agent-card dominant">
+      <div class="agent-name">SA</div>
+      <div class="agent-badge">Dominant</div>
+      <div class="agent-scope">Validate specs, plan execution, classify agents needed, score outcomes</div>
+    </div>
+    <div class="agent-card dominant">
+      <div class="agent-name">Agent Builder</div>
+      <div class="agent-badge">Dominant</div>
+      <div class="agent-scope">Build new agents to spec — purpose, scope, spawn type, and instructions</div>
+    </div>
+    <div class="agent-card temporal">
+      <div class="agent-name">Task Agents</div>
+      <div class="agent-badge">Temporal or Dominant</div>
+      <div class="agent-scope">Execute one defined task. Nothing else. Scope never expands.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ FAST-TRACK ══════════ -->
+<div class="section page-break">
+  <div class="section-label"><div class="dot"></div><h2>Fast-Track Mode</h2></div>
+  <div class="section-divider"></div>
+  <p>Three stacked mechanisms to reduce pipeline overhead for low-risk or time-sensitive work. Project config always takes precedence.</p>
+
+  <div class="diagram-card">
+    <svg width="760" height="400" viewBox="0 0 760 400" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="ft-arr" markerWidth="12" markerHeight="8" refX="11" refY="4" orient="auto" markerUnits="userSpaceOnUse">
+          <polygon points="0,0 12,4 0,8" fill="#0F2044"/>
+        </marker>
+        <marker id="ft-arr-red" markerWidth="12" markerHeight="8" refX="11" refY="4" orient="auto" markerUnits="userSpaceOnUse">
+          <polygon points="0,0 12,4 0,8" fill="#DC2626"/>
+        </marker>
+        <marker id="ft-arr-green" markerWidth="12" markerHeight="8" refX="11" refY="4" orient="auto" markerUnits="userSpaceOnUse">
+          <polygon points="0,0 12,4 0,8" fill="#10B981"/>
+        </marker>
+        <marker id="ft-arr-amber" markerWidth="12" markerHeight="8" refX="11" refY="4" orient="auto" markerUnits="userSpaceOnUse">
+          <polygon points="0,0 12,4 0,8" fill="#F59E0B"/>
+        </marker>
+        <filter id="sh2" x="-10%" y="-10%" width="120%" height="120%">
+          <feDropShadow dx="0" dy="3" stdDeviation="5" flood-color="rgba(0,0,0,0.10)"/>
+        </filter>
+      </defs>
+
+      <!-- REQUEST -->
+      <rect x="290" y="14" width="180" height="46" rx="10" fill="#0F2044" filter="url(#sh2)"/>
+      <text x="380" y="42" text-anchor="middle" fill="white" font-family="Segoe UI,Arial,sans-serif" font-size="13" font-weight="700" letter-spacing="1">REQUEST</text>
+      <line x1="380" y1="60" x2="380" y2="90" stroke="#0F2044" stroke-width="2" marker-end="url(#ft-arr)"/>
+
+      <!-- CONFIG diamond -->
+      <polygon points="380,90 500,122 380,154 260,122" fill="#EFF6FF" stroke="#2563EB" stroke-width="2" filter="url(#sh2)"/>
+      <text x="380" y="117" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="12" font-weight="700" fill="#1E40AF">herald.config.json</text>
+      <text x="380" y="135" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="11" fill="#3B82F6">fast_track enabled?</text>
+
+      <!-- NO left -->
+      <line x1="260" y1="122" x2="100" y2="122" stroke="#DC2626" stroke-width="2" marker-end="url(#ft-arr-red)"/>
+      <text x="178" y="113" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="11" font-weight="700" fill="#DC2626">NO</text>
+      <rect x="14" y="99" width="86" height="46" rx="10" fill="#DC2626" filter="url(#sh2)"/>
+      <text x="57" y="119" text-anchor="middle" fill="white" font-family="Segoe UI,Arial,sans-serif" font-size="11" font-weight="700">FULL</text>
+      <text x="57" y="135" text-anchor="middle" fill="white" font-family="Segoe UI,Arial,sans-serif" font-size="11" font-weight="700">PIPELINE</text>
+
+      <!-- YES down -->
+      <line x1="380" y1="154" x2="380" y2="186" stroke="#10B981" stroke-width="2" marker-end="url(#ft-arr-green)"/>
+      <text x="394" y="174" font-family="Segoe UI,Arial,sans-serif" font-size="11" font-weight="700" fill="#10B981">YES</text>
+
+      <!-- /fast diamond -->
+      <polygon points="380,186 500,218 380,250 260,218" fill="#F0FDF4" stroke="#10B981" stroke-width="2" filter="url(#sh2)"/>
+      <text x="380" y="213" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="12" font-weight="700" fill="#065F46">/fast flag used?</text>
+      <text x="380" y="231" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="11" fill="#059669">user prefixed request</text>
+
+      <!-- YES right skip discovery -->
+      <line x1="500" y1="218" x2="638" y2="218" stroke="#10B981" stroke-width="2" marker-end="url(#ft-arr-green)"/>
+      <text x="566" y="209" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="11" font-weight="700" fill="#10B981">YES</text>
+      <rect x="640" y="196" width="106" height="46" rx="10" fill="#10B981" filter="url(#sh2)"/>
+      <text x="693" y="216" text-anchor="middle" fill="white" font-family="Segoe UI,Arial,sans-serif" font-size="10" font-weight="700">SKIP TO</text>
+      <text x="693" y="232" text-anchor="middle" fill="white" font-family="Segoe UI,Arial,sans-serif" font-size="10" font-weight="700">PLANNING</text>
+
+      <!-- NO down -->
+      <line x1="380" y1="250" x2="380" y2="282" stroke="#F59E0B" stroke-width="2" marker-end="url(#ft-arr-amber)"/>
+      <text x="394" y="270" font-family="Segoe UI,Arial,sans-serif" font-size="11" font-weight="700" fill="#F59E0B">NO</text>
+
+      <!-- Auto classify box -->
+      <rect x="250" y="284" width="260" height="46" rx="10" fill="#FFFBEB" stroke="#F59E0B" stroke-width="2" filter="url(#sh2)"/>
+      <text x="380" y="312" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="13" font-weight="700" fill="#92400E">Auto-classify Complexity</text>
+
+      <!-- Three outcome lines -->
+      <line x1="308" y1="330" x2="140" y2="370" stroke="#10B981" stroke-width="2" marker-end="url(#ft-arr-green)"/>
+      <line x1="380" y1="330" x2="380" y2="370" stroke="#F59E0B" stroke-width="2" marker-end="url(#ft-arr-amber)"/>
+      <line x1="452" y1="330" x2="620" y2="370" stroke="#DC2626" stroke-width="2" marker-end="url(#ft-arr-red)"/>
+
+      <!-- Simple -->
+      <rect x="60" y="372" width="160" height="24" rx="8" fill="#D1FAE5" stroke="#10B981" stroke-width="1.5"/>
+      <text x="140" y="388" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="11" font-weight="700" fill="#065F46">SIMPLE → DISPATCH</text>
+
+      <!-- Moderate -->
+      <rect x="295" y="372" width="170" height="24" rx="8" fill="#FEF3C7" stroke="#F59E0B" stroke-width="1.5"/>
+      <text x="380" y="388" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="11" font-weight="700" fill="#92400E">MODERATE → PLAN</text>
+
+      <!-- Complex -->
+      <rect x="540" y="372" width="160" height="24" rx="8" fill="#FEE2E2" stroke="#DC2626" stroke-width="1.5"/>
+      <text x="620" y="388" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="11" font-weight="700" fill="#991B1B">COMPLEX → FULL</text>
+    </svg>
+    <div class="diagram-caption">Fast-track decision tree — config overrides all</div>
+  </div>
+
+  <div class="fast-cards">
+    <div class="fast-card">
+      <div class="fc-icon" style="background:#EFF6FF">⚙️</div>
+      <div class="fc-title">Config Override</div>
+      <p class="fc-desc"><code>herald.config.json</code> — set <strong>fast_track: false</strong> to enforce full pipeline on critical projects. Overrides all flags and classification.</p>
+    </div>
+    <div class="fast-card">
+      <div class="fc-icon" style="background:#F0FDF4">⚡</div>
+      <div class="fc-title">/fast Flag</div>
+      <p class="fc-desc">User prefixes request with <strong>/fast</strong> to skip discovery and context loading. Jumps straight to SA planning. Plan approval is never bypassed.</p>
+    </div>
+    <div class="fast-card">
+      <div class="fc-icon" style="background:#FFFBEB">🧠</div>
+      <div class="fc-title">Auto-classification</div>
+      <p class="fc-desc">HERALD classifies every request automatically — <strong>Simple, Moderate, or Complex</strong> — and applies the appropriate pipeline level.</p>
+    </div>
+  </div>
+
+  <table class="complexity-table">
+    <thead><tr><th>Level</th><th>Criteria</th><th>Pipeline applied</th></tr></thead>
+    <tbody>
+      <tr class="simple"><td>Simple</td><td>Single file · No ambiguity · No new agents · No cross-system impact · Low risk</td><td>Skip to dispatch</td></tr>
+      <tr class="moderate"><td>Moderate</td><td>Multiple files · Some ambiguity · Existing agents sufficient · Limited cross-system impact</td><td>Skip discovery, run planning + approval</td></tr>
+      <tr class="complex"><td>Complex</td><td>New agents needed · Cross-system · High risk · Unclear intent · Multiple viable approaches</td><td>Full pipeline</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ══════════ SIX LAYERS ══════════ -->
+<div class="section page-break">
+  <div class="section-label"><div class="dot"></div><h2>The Six Layers</h2></div>
+  <div class="section-divider"></div>
+
+  <div class="diagram-card">
+    <svg width="760" height="90" viewBox="0 0 760 90" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="pipe-arr" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto" markerUnits="userSpaceOnUse">
+          <polygon points="0,0 10,3.5 0,7" fill="#CBD5E1"/>
+        </marker>
+      </defs>
+      <!-- Boxes -->
+      <rect x="0"   y="14" width="108" height="62" rx="10" fill="url(#l1g)"/>
+      <rect x="126" y="14" width="108" height="62" rx="10" fill="url(#l2g)"/>
+      <rect x="252" y="14" width="108" height="62" rx="10" fill="url(#l3g)"/>
+      <rect x="378" y="14" width="108" height="62" rx="10" fill="url(#l4g)"/>
+      <rect x="504" y="14" width="108" height="62" rx="10" fill="url(#l5g)"/>
+      <rect x="630" y="14" width="108" height="62" rx="10" fill="url(#l6g)"/>
+
+      <!-- Gradients for boxes -->
+      <defs>
+        <linearGradient id="l1g" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#6366f1"/><stop offset="100%" style="stop-color:#8b5cf6"/></linearGradient>
+        <linearGradient id="l2g" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#2563eb"/><stop offset="100%" style="stop-color:#06b6d4"/></linearGradient>
+        <linearGradient id="l3g" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#0f766e"/><stop offset="100%" style="stop-color:#10b981"/></linearGradient>
+        <linearGradient id="l4g" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#d97706"/><stop offset="100%" style="stop-color:#f59e0b"/></linearGradient>
+        <linearGradient id="l5g" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#dc2626"/><stop offset="100%" style="stop-color:#f97316"/></linearGradient>
+        <linearGradient id="l6g" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#0f2044"/><stop offset="100%" style="stop-color:#1e3a6e"/></linearGradient>
+      </defs>
+
+      <!-- Layer numbers -->
+      <text x="54" y="38" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-family="Segoe UI,Arial,sans-serif" font-size="10" font-weight="700">L1</text>
+      <text x="180" y="38" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-family="Segoe UI,Arial,sans-serif" font-size="10" font-weight="700">L2</text>
+      <text x="306" y="38" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-family="Segoe UI,Arial,sans-serif" font-size="10" font-weight="700">L3</text>
+      <text x="432" y="38" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-family="Segoe UI,Arial,sans-serif" font-size="10" font-weight="700">L4</text>
+      <text x="558" y="38" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-family="Segoe UI,Arial,sans-serif" font-size="10" font-weight="700">L5</text>
+      <text x="684" y="38" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-family="Segoe UI,Arial,sans-serif" font-size="10" font-weight="700">L6</text>
+
+      <!-- Layer names -->
+      <text x="54" y="58" text-anchor="middle" fill="white" font-family="Segoe UI,Arial,sans-serif" font-size="13" font-weight="800">Intent</text>
+      <text x="180" y="58" text-anchor="middle" fill="white" font-family="Segoe UI,Arial,sans-serif" font-size="13" font-weight="800">Context</text>
+      <text x="306" y="58" text-anchor="middle" fill="white" font-family="Segoe UI,Arial,sans-serif" font-size="13" font-weight="800">Plan</text>
+      <text x="432" y="58" text-anchor="middle" fill="white" font-family="Segoe UI,Arial,sans-serif" font-size="13" font-weight="800">Synthesize</text>
+      <text x="558" y="58" text-anchor="middle" fill="white" font-family="Segoe UI,Arial,sans-serif" font-size="13" font-weight="800">Dispatch</text>
+      <text x="684" y="58" text-anchor="middle" fill="white" font-family="Segoe UI,Arial,sans-serif" font-size="13" font-weight="800">Feedback</text>
+
+      <!-- Arrows between boxes -->
+      <line x1="108" y1="45" x2="123" y2="45" stroke="#CBD5E1" stroke-width="2.5" marker-end="url(#pipe-arr)"/>
+      <line x1="234" y1="45" x2="249" y2="45" stroke="#CBD5E1" stroke-width="2.5" marker-end="url(#pipe-arr)"/>
+      <line x1="360" y1="45" x2="375" y2="45" stroke="#CBD5E1" stroke-width="2.5" marker-end="url(#pipe-arr)"/>
+      <line x1="486" y1="45" x2="501" y2="45" stroke="#CBD5E1" stroke-width="2.5" marker-end="url(#pipe-arr)"/>
+      <line x1="612" y1="45" x2="627" y2="45" stroke="#CBD5E1" stroke-width="2.5" marker-end="url(#pipe-arr)"/>
+    </svg>
+    <div class="diagram-caption">Six-layer pipeline · left to right · full or fast-tracked</div>
+  </div>
+
+  <div class="layers-grid">
+    <div class="layer-card l1">
+      <div class="layer-num-box"><div class="layer-num-circle">1</div><div class="layer-num-label">Intent</div></div>
+      <div class="layer-content">
+        <h3>Intent Engine</h3>
+        <ul>
+          <li>Check <code>herald.config.json</code> — apply fast-track rules</li>
+          <li>If <code>/fast</code> used and enabled → skip to layer 3</li>
+          <li>Classify complexity: simple, moderate, or complex</li>
+          <li>Full discovery session across all 8 dimensions: Intent · Scope · Constraints · Stack · Format · Timeline · Dependencies · Risk tolerance</li>
+          <li>Do not proceed until all dimensions are answered or confirmed not applicable</li>
+        </ul>
+      </div>
+    </div>
+    <div class="layer-card l2">
+      <div class="layer-num-box"><div class="layer-num-circle">2</div><div class="layer-num-label">Context</div></div>
+      <div class="layer-content">
+        <h3>Context Harvester</h3>
+        <ul>
+          <li>Check <code>plans/</code> for any plan with <code>status: in_progress</code></li>
+          <li>If found — surface to user with live checklist and offer to resume from last incomplete item</li>
+          <li>Otherwise load only what is relevant: files, schemas, configs, prior decisions</li>
+          <li>Output a concise context summary: what was found, where it lives, what matters</li>
+        </ul>
+      </div>
+    </div>
+    <div class="layer-card l3">
+      <div class="layer-num-box"><div class="layer-num-circle">3</div><div class="layer-num-label">Plan</div></div>
+      <div class="layer-content">
+        <h3>Plan Architect</h3>
+        <div class="layer-owner">HERALD dispatches SA</div>
+        <ul>
+          <li>SA analyzes project structure and checks <code>agent-registry.json</code></li>
+          <li>SA classifies each required agent as <strong>temporal</strong> or <strong>dominant</strong></li>
+          <li>SA produces viable plans → HERALD presents each with Approach · Pros · Cons · Risks</li>
+          <li>HERALD waits for user to select a plan — never proceeds without approval</li>
+          <li>Approved plan saved to <code>plans/</code> with a full checklist (all items: pending)</li>
+        </ul>
+      </div>
+    </div>
+    <div class="layer-card l4">
+      <div class="layer-num-box"><div class="layer-num-circle">4</div><div class="layer-num-label">Synthesize</div></div>
+      <div class="layer-content">
+        <h3>Prompt Synthesizer</h3>
+        <ul>
+          <li>HERALD writes a precise brief for each agent: objective, context, constraints, output spec, KB patterns</li>
+          <li>Context scoped to each agent only — nothing extra</li>
+          <li>No raw user input is ever passed to an agent</li>
+        </ul>
+      </div>
+    </div>
+    <div class="layer-card l5">
+      <div class="layer-num-box"><div class="layer-num-circle">5</div><div class="layer-num-label">Dispatch</div></div>
+      <div class="layer-content">
+        <h3>Dispatch Router</h3>
+        <div class="layer-owner">HERALD dispatches Agent Builder if needed</div>
+        <ul>
+          <li>Compare plan requirements against <code>agent-registry.json</code></li>
+          <li>Missing agents → Agent Builder dispatched with full spec; new dominant agents registered</li>
+          <li>Execute in order — sequential or parallel per approved plan</li>
+          <li>Each completed task updates the checklist: status · timestamp · retries</li>
+          <li>Temporal agents closed on task completion</li>
+        </ul>
+      </div>
+    </div>
+    <div class="layer-card l6">
+      <div class="layer-num-box"><div class="layer-num-circle">6</div><div class="layer-num-label">Feedback</div></div>
+      <div class="layer-content">
+        <h3>Feedback Loop</h3>
+        <div class="layer-owner">HERALD dispatches SA</div>
+        <ul>
+          <li>Plan marked <code>completed</code> · SA dispatched to score</li>
+          <li>SA asks user: <em>"Does the output match what was agreed in the handoff spec?"</em></li>
+          <li>Composite score calculated → reported to HERALD → written to plan file</li>
+          <li><strong>≥ 95% → pattern stored in knowledge-base.json</strong></li>
+          <li><strong>&lt; 95% → failure dimensions tagged, no pattern stored</strong></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ SCORECARD ══════════ -->
+<div class="section">
+  <div class="section-label"><div class="dot"></div><h2>Success Scorecard</h2></div>
+  <div class="section-divider"></div>
+  <p>Every execution is scored by the SA across four weighted dimensions. The composite score determines whether the pattern is stored in the knowledge base.</p>
+
+  <div class="score-cards">
+    <div class="score-card"><div class="sc-pct">40%</div><div class="sc-name">Spec Compliance</div><div class="sc-how">User confirms output matched the agreed handoff spec</div></div>
+    <div class="score-card"><div class="sc-pct">25%</div><div class="sc-name">Scope Adherence</div><div class="sc-how">SA verifies nothing outside agreed scope was touched</div></div>
+    <div class="score-card"><div class="sc-pct">20%</div><div class="sc-name">Technical Correctness</div><div class="sc-how">Tests pass, no regressions introduced</div></div>
+    <div class="score-card"><div class="sc-pct">15%</div><div class="sc-name">Execution Efficiency</div><div class="sc-how">Retries needed, token cost vs estimate</div></div>
+  </div>
+
+  <div class="threshold-banner">
+    <div class="tb-num">95%</div>
+    <div class="tb-text">
+      <strong>Composite threshold to store a pattern</strong>
+      <p>Scores below 95% tag failure dimensions and record what fell short — but no pattern is stored. This keeps the knowledge base clean and high-quality over time.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ FLYWHEEL ══════════ -->
+<div class="section">
+  <div class="section-label"><div class="dot"></div><h2>Self-Improvement Flywheel</h2></div>
+  <div class="section-divider"></div>
+  <p>HERALD gets smarter with every successful execution. Stored patterns let HERALD skip layers 1–3 on matched requests — making repeat task types faster and cheaper over time.</p>
+
+  <div class="diagram-card">
+    <svg width="760" height="410" viewBox="0 0 760 410" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="fw-arr" markerWidth="12" markerHeight="8" refX="11" refY="4" orient="auto" markerUnits="userSpaceOnUse">
+          <polygon points="0,0 12,4 0,8" fill="#0F2044"/>
+        </marker>
+        <marker id="fw-green" markerWidth="12" markerHeight="8" refX="11" refY="4" orient="auto" markerUnits="userSpaceOnUse">
+          <polygon points="0,0 12,4 0,8" fill="#10B981"/>
+        </marker>
+        <marker id="fw-red" markerWidth="12" markerHeight="8" refX="11" refY="4" orient="auto" markerUnits="userSpaceOnUse">
+          <polygon points="0,0 12,4 0,8" fill="#EF4444"/>
+        </marker>
+        <filter id="sh3" x="-10%" y="-10%" width="120%" height="120%">
+          <feDropShadow dx="0" dy="3" stdDeviation="5" flood-color="rgba(0,0,0,0.08)"/>
+        </filter>
+        <linearGradient id="n-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color:#0F2044"/>
+          <stop offset="100%" style="stop-color:#1E3A6E"/>
+        </linearGradient>
+      </defs>
+
+      <!-- Node 1: Execution completes -->
+      <rect x="215" y="12" width="250" height="52" rx="12" fill="url(#n-grad)" filter="url(#sh3)"/>
+      <text x="340" y="33" text-anchor="middle" fill="white" font-family="Segoe UI,Arial,sans-serif" font-size="13" font-weight="700">Execution completes</text>
+      <text x="340" y="52" text-anchor="middle" fill="rgba(6,182,212,0.7)" font-family="Segoe UI,Arial,sans-serif" font-size="10">checklist fully resolved</text>
+      <line x1="340" y1="64" x2="340" y2="94" stroke="#0F2044" stroke-width="2" marker-end="url(#fw-arr)"/>
+
+      <!-- Node 2: SA scores -->
+      <rect x="215" y="96" width="250" height="52" rx="12" fill="white" stroke="#E2E8F0" stroke-width="1.5" filter="url(#sh3)"/>
+      <text x="340" y="117" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="13" font-weight="700" fill="#0F2044">SA scores outcome</text>
+      <text x="340" y="136" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="11" fill="#64748B">reports composite score to HERALD</text>
+      <line x1="340" y1="148" x2="340" y2="178" stroke="#0F2044" stroke-width="2" marker-end="url(#fw-arr)"/>
+
+      <!-- Node 3: User confirms -->
+      <rect x="215" y="180" width="250" height="52" rx="12" fill="white" stroke="#E2E8F0" stroke-width="1.5" filter="url(#sh3)"/>
+      <text x="340" y="201" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="13" font-weight="700" fill="#0F2044">User confirms</text>
+      <text x="340" y="220" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="11" fill="#64748B">spec compliance — 40% of composite</text>
+      <line x1="340" y1="232" x2="340" y2="262" stroke="#0F2044" stroke-width="2" marker-end="url(#fw-arr)"/>
+
+      <!-- Decision diamond -->
+      <polygon points="340,264 460,294 340,324 220,294" fill="#F8FAFC" stroke="#0F2044" stroke-width="2" filter="url(#sh3)"/>
+      <text x="340" y="290" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="13" font-weight="700" fill="#0F2044">Score ≥ 95%?</text>
+
+      <!-- YES right -->
+      <line x1="460" y1="294" x2="570" y2="294" stroke="#10B981" stroke-width="2" marker-end="url(#fw-green)"/>
+      <text x="513" y="285" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="11" font-weight="700" fill="#10B981">YES</text>
+      <rect x="572" y="272" width="96" height="46" rx="10" fill="#10B981" filter="url(#sh3)"/>
+      <text x="620" y="293" text-anchor="middle" fill="white" font-family="Segoe UI,Arial,sans-serif" font-size="11" font-weight="700">STORE</text>
+      <text x="620" y="308" text-anchor="middle" fill="rgba(255,255,255,0.8)" font-family="Segoe UI,Arial,sans-serif" font-size="10">PATTERN</text>
+
+      <!-- NO left -->
+      <line x1="220" y1="294" x2="110" y2="294" stroke="#EF4444" stroke-width="2" marker-end="url(#fw-red)"/>
+      <text x="163" y="285" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="11" font-weight="700" fill="#EF4444">NO</text>
+      <rect x="12" y="272" width="96" height="46" rx="10" fill="#EF4444" filter="url(#sh3)"/>
+      <text x="60" y="293" text-anchor="middle" fill="white" font-family="Segoe UI,Arial,sans-serif" font-size="11" font-weight="700">TAG</text>
+      <text x="60" y="308" text-anchor="middle" fill="rgba(255,255,255,0.8)" font-family="Segoe UI,Arial,sans-serif" font-size="10">FAILURE</text>
+
+      <!-- Store → KB grows -->
+      <line x1="620" y1="318" x2="620" y2="344" stroke="#10B981" stroke-width="2" marker-end="url(#fw-green)"/>
+      <rect x="520" y="346" width="200" height="24" rx="8" fill="#D1FAE5" stroke="#10B981" stroke-width="1.5"/>
+      <text x="620" y="362" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="11" font-weight="700" fill="#065F46">KB grows → skip L1–L3 next time</text>
+    </svg>
+    <div class="diagram-caption">Self-improvement flywheel — patterns accumulate, pipeline gets faster</div>
+  </div>
+</div>
+
+<!-- ══════════ RULES ══════════ -->
+<div class="section">
+  <div class="section-label"><div class="dot"></div><h2>Rules</h2></div>
+  <div class="section-divider"></div>
+  <div class="rules-grid">
+    <div class="rule-card"><div class="rc-title">HERALD is the sole orchestrator</div><p class="rc-body">All agent communication routes through HERALD. No agent talks to another agent directly.</p></div>
+    <div class="rule-card"><div class="rc-title">Single scope</div><p class="rc-body">Every agent does exactly one thing. Scope is defined at creation and does not expand.</p></div>
+    <div class="rule-card"><div class="rc-title">No raw passthrough</div><p class="rc-body">HERALD never passes raw user input to downstream agents. All input is translated first.</p></div>
+    <div class="rule-card"><div class="rc-title">Plan approval gate</div><p class="rc-body">HERALD never dispatches without the user approving a plan first. Always.</p></div>
+    <div class="rule-card"><div class="rc-title">Plans are persistent</div><p class="rc-body">Every approved plan is saved with a live checklist. HERALD resumes in-progress plans on reinitialization.</p></div>
+    <div class="rule-card"><div class="rc-title">Config is king</div><p class="rc-body"><code>herald.config.json</code> overrides all flags and auto-classification. Lock down critical projects here.</p></div>
+    <div class="rule-card"><div class="rc-title">Quality gate</div><p class="rc-body">Composite score ≥ 95% required to store a pattern. Keeps the knowledge base clean and trustworthy.</p></div>
+    <div class="rule-card"><div class="rc-title">Agent lifecycle</div><p class="rc-body">HERALD spawns temporal agents and closes them. HERALD registers and maintains dominant agents.</p></div>
+    <div class="rule-card"><div class="rc-title">Environment-agnostic</div><p class="rc-body">HERALD operates identically regardless of the downstream environment — codebase, API, ERP, or any other system.</p></div>
+  </div>
+</div>
+
+<!-- ══════════ SCHEMAS ══════════ -->
+<div class="section">
+  <div class="section-label"><div class="dot"></div><h2>File Schemas</h2></div>
+  <div class="section-divider"></div>
+
+  <div class="schema-card">
+    <div class="schema-header">
+      <div class="schema-dot" style="background:#EF4444"></div>
+      <div class="schema-dot" style="background:#F59E0B"></div>
+      <div class="schema-dot" style="background:#10B981"></div>
+      <div class="sh-title">plans/2026-03-17_task-name.json</div>
+    </div>
+    <div class="schema-body">{
+  <span class="key">"id"</span>:           <span class="str">"2026-03-17_jwt-auth-express"</span>,
+  <span class="key">"created"</span>:      <span class="str">"2026-03-17T10:00:00"</span>,
+  <span class="key">"complexity"</span>:   <span class="str">"simple | moderate | complex"</span>,
+  <span class="key">"fast_track"</span>:   <span class="bool">false</span>,
+  <span class="key">"status"</span>:       <span class="str">"pending | in_progress | completed | failed"</span>,
+  <span class="key">"approach"</span>:     <span class="str">"summary of the approved plan"</span>,
+  <span class="key">"checklist"</span>: [
+    {
+      <span class="key">"task"</span>:         <span class="str">"description of the task"</span>,
+      <span class="key">"agent"</span>:        <span class="str">"agent_id"</span>,
+      <span class="key">"spawn_type"</span>:   <span class="str">"temporal | dominant"</span>,
+      <span class="key">"status"</span>:       <span class="str">"pending | in_progress | completed | failed"</span>,
+      <span class="key">"started_at"</span>:   <span class="bool">null</span>,
+      <span class="key">"completed_at"</span>: <span class="bool">null</span>,
+      <span class="key">"retries"</span>:      <span class="num">0</span>
+    }
+  ],
+  <span class="key">"score"</span>: {
+    <span class="key">"composite"</span>: <span class="bool">null</span>, <span class="key">"spec_compliance"</span>: <span class="bool">null</span>,
+    <span class="key">"scope_adherence"</span>: <span class="bool">null</span>, <span class="key">"technical_correctness"</span>: <span class="bool">null</span>, <span class="key">"execution_efficiency"</span>: <span class="bool">null</span>
+  },
+  <span class="key">"pattern_stored"</span>: <span class="bool">false</span>
+}</div>
+  </div>
+
+  <div class="schema-card">
+    <div class="schema-header">
+      <div class="schema-dot" style="background:#EF4444"></div>
+      <div class="schema-dot" style="background:#F59E0B"></div>
+      <div class="schema-dot" style="background:#10B981"></div>
+      <div class="sh-title">herald.config.json</div>
+    </div>
+    <div class="schema-body">{
+  <span class="key">"fast_track"</span>: {
+    <span class="key">"enabled"</span>:          <span class="bool">true</span>,
+    <span class="key">"allow_slash_fast"</span>: <span class="bool">true</span>,
+    <span class="key">"auto_classify"</span>:    <span class="bool">true</span>
+  },
+  <span class="key">"pipeline"</span>: {
+    <span class="key">"require_plan_approval"</span>: <span class="bool">true</span>,
+    <span class="key">"success_threshold"</span>:    <span class="num">95</span>
+  },
+  <span class="key">"version"</span>: <span class="str">"1.0"</span>
+}</div>
+  </div>
+
+  <div class="schema-card">
+    <div class="schema-header">
+      <div class="schema-dot" style="background:#EF4444"></div>
+      <div class="schema-dot" style="background:#F59E0B"></div>
+      <div class="schema-dot" style="background:#10B981"></div>
+      <div class="sh-title">knowledge-base.json</div>
+    </div>
+    <div class="schema-body">{
+  <span class="key">"patterns"</span>: [
+    {
+      <span class="key">"input_pattern"</span>:     <span class="str">"type of request"</span>,
+      <span class="key">"engineered_prompt"</span>: <span class="str">"the brief that worked"</span>,
+      <span class="key">"agents_used"</span>:       [<span class="str">"agent_a"</span>, <span class="str">"agent_b"</span>],
+      <span class="key">"plan_id"</span>:           <span class="str">"2026-03-17_task-name"</span>,
+      <span class="key">"score"</span>: {
+        <span class="key">"composite"</span>: <span class="num">95</span>, <span class="key">"spec_compliance"</span>: <span class="num">95</span>,
+        <span class="key">"scope_adherence"</span>: <span class="num">100</span>, <span class="key">"technical_correctness"</span>: <span class="num">95</span>, <span class="key">"execution_efficiency"</span>: <span class="num">90</span>
+      },
+      <span class="key">"retries"</span>: <span class="num">0</span>, <span class="key">"token_cost"</span>: <span class="num">420</span>
+    }
+  ],
+  <span class="key">"version"</span>: <span class="str">"1.0"</span>, <span class="key">"last_updated"</span>: <span class="bool">null</span>
+}</div>
+  </div>
+</div>
+
+</div><!-- /content -->
+
+<div class="footer">
+  <strong>HERALD</strong> &nbsp;·&nbsp; Universal Agentic Interface Layer &nbsp;·&nbsp; MIT License &nbsp;·&nbsp; Built to make AI coding accessible to everyone
+</div>
+
+</body>
+</html>

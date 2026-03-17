@@ -1,0 +1,12 @@
+{
+  "fast_track": {
+    "enabled": true,
+    "allow_slash_fast": true,
+    "auto_classify": true
+  },
+  "pipeline": {
+    "require_plan_approval": true,
+    "success_threshold": 95
+  },
+  "version": "1.0"
+}

@@ -1,0 +1,24 @@
+{
+  "patterns": [
+    {
+      "input_pattern": "add JWT authentication to an Express app",
+      "engineered_prompt": "Add JWT-based auth to Express: install bcrypt + jsonwebtoken, add password field to User model, create POST /auth/register and POST /auth/login routes, create Bearer token middleware, mount routes in app.js. Use process.env.JWT_SECRET, 24h expiry, bcrypt for hashing. Do not modify existing routes.",
+      "agents_used": ["install-deps", "update-user-model", "create-auth-routes", "create-auth-middleware", "mount-routes", "run-tests"],
+      "outcome": "success",
+      "token_cost": 1840,
+      "retries": 0,
+      "notes": "User model already existed with email + name fields. bcrypt and jsonwebtoken were not pre-installed. Parallel execution of route + middleware creation saved ~30% time."
+    },
+    {
+      "input_pattern": "write unit tests for a utility function",
+      "engineered_prompt": "Write unit tests for [function name] in [file path]. Cover: happy path, edge cases (empty input, null, boundary values), and expected error throws. Use the existing test framework (detect from package.json). Output: test file at [test path] following existing naming conventions.",
+      "agents_used": ["read-source", "write-tests", "run-tests"],
+      "outcome": "success",
+      "token_cost": 620,
+      "retries": 1,
+      "notes": "First attempt missed null input edge case. Updated pattern to explicitly include null in edge case list."
+    }
+  ],
+  "version": "1.0",
+  "last_updated": "2026-03-17"
+}
