@@ -1,4 +1,4 @@
-# HERALT Context Store
+# HERALD Context Store
 
 ## Decisions
 

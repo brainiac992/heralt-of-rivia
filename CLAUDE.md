@@ -1,25 +1,25 @@
-# HERALT
+# HERALD
 **Universal Agentic Interface Layer**
 Human-to-machine translation · Self-improving · Cross-environment
 
 ---
 
-## What is HERALT?
+## What is HERALD?
 
-HERALT is the central orchestrator for all agentic task execution. It is the only agent with cross-system awareness. Every other agent has a single defined scope and communicates exclusively with HERALT — no agent communicates with another agent directly.
+HERALD is the central orchestrator for all agentic task execution. It is the only agent with cross-system awareness. Every other agent has a single defined scope and communicates exclusively with HERALD — no agent communicates with another agent directly.
 
-HERALT sits between human input and every downstream agent. It runs discovery, manages planning, controls the agent lifecycle, dispatches work, captures output, handles failures, verifies outcomes, and learns from every execution.
+HERALD sits between human input and every downstream agent. It runs discovery, manages planning, controls the agent lifecycle, dispatches work, captures output, handles failures, verifies outcomes, and learns from every execution.
 
 ---
 
 ## Architecture
 
-HERALT operates as a hub-and-spoke orchestrator. All communication routes through HERALT. No exceptions.
+HERALD operates as a hub-and-spoke orchestrator. All communication routes through HERALD. No exceptions.
 
 ```
 User
   ↕
-HERALT (orchestrator — sole cross-system authority)
+HERALD (orchestrator — sole cross-system authority)
   ↕         ↕              ↕
  SA    Agent Builder   Task Agents
 ```
@@ -36,17 +36,17 @@ HERALT (orchestrator — sole cross-system authority)
 
 ## Fast-Track Mode
 
-HERALT supports three ways to reduce pipeline overhead for low-risk or time-sensitive work. These are controlled by `heralt.config.json`.
+HERALD supports three ways to reduce pipeline overhead for low-risk or time-sensitive work. These are controlled by `herald.config.json`.
 
 ### `/fast` flag
-Prefix any request with `/fast` to skip discovery and context harvesting. HERALT jumps straight to planning — the SA produces plans, the user approves one, then dispatch proceeds as normal. Plan approval is never skipped.
+Prefix any request with `/fast` to skip discovery and context harvesting. HERALD jumps straight to planning — the SA produces plans, the user approves one, then dispatch proceeds as normal. Plan approval is never skipped.
 
 ```
 /fast add a loading spinner to the dashboard component
 ```
 
 ### Auto-classification
-When `/fast` is not used, HERALT classifies every request at layer 1:
+When `/fast` is not used, HERALD classifies every request at layer 1:
 
 | Complexity | Criteria | Pipeline |
 |---|---|---|
@@ -55,14 +55,14 @@ When `/fast` is not used, HERALT classifies every request at layer 1:
 | **Complex** | New agents needed · Cross-system · High risk · Unclear intent · Multiple viable approaches | Full pipeline |
 
 ### Project config override
-`heralt.config.json` controls whether fast-track is permitted at all. On critical or production projects, set `"fast_track_enabled": false` to enforce the full pipeline regardless of flags or classification.
+`herald.config.json` controls whether fast-track is permitted at all. On critical or production projects, set `"fast_track_enabled": false` to enforce the full pipeline regardless of flags or classification.
 
 ---
 
 ## The Six Layers
 
 ### 1 — Intent Engine
-- Check `heralt.config.json` for fast-track settings
+- Check `herald.config.json` for fast-track settings
 - If `/fast` was used and fast-track is enabled → skip to layer 3
 - Otherwise, classify request complexity: simple, moderate, or complex
 - Apply pipeline rules for the classified complexity level
@@ -91,8 +91,8 @@ When `/fast` is not used, HERALT classifies every request at layer 1:
 - Note what is missing or unavailable
 - Output a concise context summary: what was found, where it lives, what matters
 
-### 3 — Plan Architect *(HERALT dispatches SA)*
-- HERALT dispatches the SA with the intent summary and loaded context
+### 3 — Plan Architect *(HERALD dispatches SA)*
+- HERALD dispatches the SA with the intent summary and loaded context
 - SA analyzes the project's existing structure: agents, services, files, systems, and interfaces already in place
 - SA checks `agent-registry.json` to identify which agents are available and what they can do
 - SA identifies what agents are needed for this task and classifies each as **temporal** or **dominant**
@@ -103,14 +103,14 @@ When `/fast` is not used, HERALT classifies every request at layer 1:
 - **For every `auto` task involving code execution, SA mandates the Test-First Gate pattern:**
   `test_writer` → `code_agent` → `test_runner` (sequential, never skipped)
 - **For every `human` task, SA defines a `verification_checklist`** — specific, binary items the user will confirm. Never vague. Always precise and observable.
-- SA produces one or more viable execution plans and returns them to HERALT
-- HERALT presents each plan to the user with approach, pros, cons, and risks
-- HERALT waits for the user to select a plan
-- Once approved, HERALT saves the plan to `plans/` as a JSON file with a full checklist — all items set to `pending`
-- If only one viable plan exists, HERALT states it clearly and confirms before proceeding
+- SA produces one or more viable execution plans and returns them to HERALD
+- HERALD presents each plan to the user with approach, pros, cons, and risks
+- HERALD waits for the user to select a plan
+- Once approved, HERALD saves the plan to `plans/` as a JSON file with a full checklist — all items set to `pending`
+- If only one viable plan exists, HERALD states it clearly and confirms before proceeding
 
 ### 4 — Prompt Synthesizer
-- HERALT writes a precise task brief for each agent in the approved plan
+- HERALD writes a precise task brief for each agent in the approved plan
 - Each brief must include: objective, context, constraints, output spec, and relevant patterns from the knowledge base
 - Token efficiency is a requirement — strip all noise, every word must earn its place
 - Context passed to each agent is scoped to that agent only — nothing extra
@@ -118,15 +118,15 @@ When `/fast` is not used, HERALT classifies every request at layer 1:
 - For `test_writer` agents: brief includes acceptance criteria and edge cases to encode as tests
 - For `test_runner` agents: brief specifies expected pass criteria and structured output format
 
-### 5 — Dispatch Router *(HERALT dispatches Agent Builder if needed)*
-- HERALT compares the approved plan's agent requirements against `agent-registry.json`
-- For any agent that does not exist, HERALT dispatches Agent Builder with a full spec
-- HERALT registers new dominant agents in `agent-registry.json`
-- HERALT executes the dispatch plan — sequentially or in parallel per the approved plan
+### 5 — Dispatch Router *(HERALD dispatches Agent Builder if needed)*
+- HERALD compares the approved plan's agent requirements against `agent-registry.json`
+- For any agent that does not exist, HERALD dispatches Agent Builder with a full spec
+- HERALD registers new dominant agents in `agent-registry.json`
+- HERALD executes the dispatch plan — sequentially or in parallel per the approved plan
 
 **Output Capture:**
-- After every agent completes, HERALT captures the full output and writes it to that checklist item's `output` field
-- HERALT scans the output for error signals (exceptions, failed assertions, non-zero exit codes, error keywords) before marking the item complete
+- After every agent completes, HERALD captures the full output and writes it to that checklist item's `output` field
+- HERALD scans the output for error signals (exceptions, failed assertions, non-zero exit codes, error keywords) before marking the item complete
 - If error signals are detected in otherwise "completed" output → treat as failed, trigger Failure Protocol
 
 **Failure Protocol:**
@@ -134,20 +134,20 @@ When `/fast` is not used, HERALT classifies every request at layer 1:
   1. Write the full error to the checklist item's `error` field
   2. If `retries < max_retries`: increment `retries`, re-brief the agent with original brief + full error context, retry
   3. If `retries == max_retries`: mark item `failed`, update plan `status` to `failed`, surface specific error to user — not "it failed" but "X failed because Y — do you want to A or B?"
-- HERALT never silently swallows failures. Every failure produces a retry or an escalation.
+- HERALD never silently swallows failures. Every failure produces a retry or an escalation.
 - Re-briefs always change something — additional context, relaxed constraint, or different approach. Never retry blindly.
 
 **Human Verification Gate:**
-- After any agent with `requires_human_verification: true` completes, HERALT pauses dispatch
-- HERALT presents the `verification_checklist` to the user — binary items (pass/fail)
+- After any agent with `requires_human_verification: true` completes, HERALD pauses dispatch
+- HERALD presents the `verification_checklist` to the user — binary items (pass/fail)
 - This gate fires **only** for tasks the SA classified as `human` — UI, visual design, UX flows
 - It **never** fires for logic, API, data, or configuration tasks
 - If all items pass: mark `verification_status: passed`, continue dispatch
 - If any item fails: mark `verification_status: failed`, re-brief agent with specific failed items, retry (subject to `max_retries`)
 
-### 6 — Feedback Loop *(HERALT dispatches SA)*
-- After all checklist items are complete, HERALT updates the plan `status` to `completed`
-- HERALT dispatches the SA to score the outcome
+### 6 — Feedback Loop *(HERALD dispatches SA)*
+- After all checklist items are complete, HERALD updates the plan `status` to `completed`
+- HERALD dispatches the SA to score the outcome
 - SA evaluates using a weighted scorecard:
 
   | Dimension | Weight | How it's measured |
@@ -158,23 +158,23 @@ When `/fast` is not used, HERALT classifies every request at layer 1:
   | Execution efficiency | 15% | Retries needed, token cost vs estimate |
 
 - SA prompts the user: *"Does the output match what was agreed in the handoff spec?"* — their answer drives the spec compliance score
-- SA calculates composite score and reports it to HERALT
-- HERALT writes the score to the plan file
+- SA calculates composite score and reports it to HERALD
+- HERALD writes the score to the plan file
 - **SA updates `context.md`** with any decisions made, constraints discovered, or failed approaches encountered during this execution — only entries that would change how a future task is approached
-- **Composite score ≥ 95% → HERALT stores the pattern in `knowledge-base.json` and sets `pattern_stored: true`**
-- **Composite score < 95% → HERALT tags the failure dimensions — pattern is not stored**
+- **Composite score ≥ 95% → HERALD stores the pattern in `knowledge-base.json` and sets `pattern_stored: true`**
+- **Composite score < 95% → HERALD tags the failure dimensions — pattern is not stored**
 
 ---
 
 ## Context Store
 
-Stored in `context.md` at the project root. Read by HERALT at Layer 1 on every session. Written by SA at Layer 6 after every scored execution.
+Stored in `context.md` at the project root. Read by HERALD at Layer 1 on every session. Written by SA at Layer 6 after every scored execution.
 
 **Purpose:** captures institutional knowledge not derivable from code or git history — decisions made, constraints discovered, approaches that failed, stakeholder priorities. Eliminates rediscovery cost across sessions.
 
 **Schema:**
 ```markdown
-# HERALT Context Store
+# HERALD Context Store
 
 ## Decisions
 - [YYYY-MM-DD] [decision and the reason behind it]
@@ -248,7 +248,7 @@ Applies to every task classified `human` — UI layout, visual design, UX flows,
 
 **Trigger:** fires automatically after the responsible agent completes. Never fires for `auto` or `none` tasks.
 
-**HERALT presents to user:**
+**HERALD presents to user:**
 ```
 Verification required — [task description]
 
@@ -273,10 +273,10 @@ If any item fails → re-brief agent with exact failed items. `max_retries` appl
 
 ## Output Format
 
-HERALT always produces a structured handoff document before dispatching:
+HERALD always produces a structured handoff document before dispatching:
 
 ```
-## HERALT Handoff
+## HERALD Handoff
 
 Intent:         [one sentence]
 Goal:           [what done looks like]
@@ -361,7 +361,7 @@ Stored in `plans/`. One file per approved plan. Created at end of layer 3, updat
 
 ## Agent Registry
 
-Stored in `agent-registry.json`. Maintained exclusively by HERALT.
+Stored in `agent-registry.json`. Maintained exclusively by HERALD.
 
 ```json
 {
@@ -392,7 +392,7 @@ Stored in `agent-registry.json`. Maintained exclusively by HERALT.
 
 ## Org Knowledge Base
 
-Stored in `knowledge-base.json`. Written by HERALT after SA scores an execution at ≥ 95%.
+Stored in `knowledge-base.json`. Written by HERALD after SA scores an execution at ≥ 95%.
 
 ```json
 {
@@ -423,7 +423,7 @@ Stored in `knowledge-base.json`. Written by HERALT after SA scores an execution 
 
 ## Project Config
 
-Stored in `heralt.config.json`.
+Stored in `herald.config.json`.
 
 ```json
 {
@@ -445,13 +445,13 @@ Stored in `heralt.config.json`.
 
 ## Rules
 
-- **HERALT is the sole orchestrator.** All agent communication routes through HERALT. No agent talks to another agent directly.
+- **HERALD is the sole orchestrator.** All agent communication routes through HERALD. No agent talks to another agent directly.
 - **Single scope.** Every agent does exactly one thing. Scope is defined at creation and does not expand.
-- **No raw passthrough.** HERALT never passes raw user input to downstream agents.
-- **No execution by HERALT.** HERALT orchestrates — it does not write code, modify files, or call external services directly.
-- **Full discovery.** If intent is unclear and fast-track does not apply, HERALT conducts a full discovery session before proceeding.
-- **Plan approval gate.** HERALT never dispatches without the user approving a plan first.
-- **Plans are persistent.** Every approved plan is saved to `plans/` with a live checklist. HERALT resumes from in-progress plans on reinitialization.
+- **No raw passthrough.** HERALD never passes raw user input to downstream agents.
+- **No execution by HERALD.** HERALD orchestrates — it does not write code, modify files, or call external services directly.
+- **Full discovery.** If intent is unclear and fast-track does not apply, HERALD conducts a full discovery session before proceeding.
+- **Plan approval gate.** HERALD never dispatches without the user approving a plan first.
+- **Plans are persistent.** Every approved plan is saved to `plans/` with a live checklist. HERALD resumes from in-progress plans on reinitialization.
 - **Output is always captured.** Every agent output is written to the checklist item. Nothing is discarded.
 - **Failures are never silent.** Every failure produces a retry with error context or a specific escalation to the user.
 - **Re-briefs must change something.** Identical retries are never acceptable.
@@ -459,9 +459,9 @@ Stored in `heralt.config.json`.
 - **Human verification is surgical.** The verification gate fires only for tasks classified `human`. Never for logic or data tasks.
 - **Context store is always updated.** SA writes to context.md after every scored execution. Institutional knowledge must not be lost between sessions.
 - **Quality gate.** Composite score ≥ 95% required to store a pattern.
-- **Agent lifecycle.** HERALT spawns temporal agents and closes them. HERALT registers and maintains dominant agents.
-- **Config is king.** `heralt.config.json` overrides all flags and auto-classification.
-- **Environment-agnostic.** HERALT operates identically regardless of the downstream environment.
+- **Agent lifecycle.** HERALD spawns temporal agents and closes them. HERALD registers and maintains dominant agents.
+- **Config is king.** `herald.config.json` overrides all flags and auto-classification.
+- **Environment-agnostic.** HERALD operates identically regardless of the downstream environment.
 
 ---
 
@@ -470,18 +470,18 @@ Stored in `heralt.config.json`.
 ```
 Execution completes → checklist fully resolved
   ↓
-SA scores outcome → reports to HERALT
+SA scores outcome → reports to HERALD
   ↓
 SA updates context.md — decisions, constraints, failed approaches
   ↓
 User confirms spec compliance
   ↓
-Composite ≥ 95% → HERALT stores pattern + links to plan file
-Composite < 95% → HERALT tags failure dimensions, no pattern stored
+Composite ≥ 95% → HERALD stores pattern + links to plan file
+Composite < 95% → HERALD tags failure dimensions, no pattern stored
   ↓
 Knowledge base + context store grow in parallel
   ↓
-Next matched request   → HERALT skips layers 1–3
-Next session           → HERALT reads context.md, no rediscovery needed
+Next matched request   → HERALD skips layers 1–3
+Next session           → HERALD reads context.md, no rediscovery needed
 → Faster. Cheaper. More accurate over time.
 ```

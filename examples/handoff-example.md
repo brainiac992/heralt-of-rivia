@@ -1,6 +1,6 @@
-# HERALT Handoff — Example
+# HERALD Handoff — Example
 
-This is an example of what HERALT produces before any agent executes.
+This is an example of what HERALD produces before any agent executes.
 
 ---
 
@@ -9,7 +9,7 @@ This is an example of what HERALT produces before any agent executes.
 
 ---
 
-## HERALT Handoff
+## HERALD Handoff
 
 **Intent:** Add JWT-based user authentication (register, login, protected routes) to an existing Express.js application.
 
