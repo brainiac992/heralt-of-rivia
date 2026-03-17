@@ -1,7 +1,7 @@
 {
-  "id": "2026-03-17_heralt-v2",
+  "id": "2026-03-17_herald-v2",
   "created": "2026-03-17T17:00:00",
-  "request": "Upgrade HERALT with: Failure Protocol, Context Store, Test-First Gate, Observer, Human Verification Gate",
+  "request": "Upgrade HERALD with: Failure Protocol, Context Store, Test-First Gate, Observer, Human Verification Gate",
   "complexity": "complex",
   "fast_track": false,
   "status": "completed",
