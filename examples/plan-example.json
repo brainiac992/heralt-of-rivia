@@ -15,7 +15,13 @@
       "started_at": "2026-03-17T10:01:00",
       "completed_at": "2026-03-17T10:02:00",
       "retries": 0,
-      "notes": null
+      "max_retries": 2,
+      "error": null,
+      "output": "added 2 packages — bcrypt@5.1.0, jsonwebtoken@9.0.0",
+      "verification_type": "none",
+      "requires_human_verification": false,
+      "verification_checklist": null,
+      "verification_status": null
     },
     {
       "task": "Add password field to User model",
@@ -25,17 +31,61 @@
       "started_at": "2026-03-17T10:02:00",
       "completed_at": "2026-03-17T10:04:00",
       "retries": 0,
-      "notes": null
+      "max_retries": 2,
+      "error": null,
+      "output": "updated src/models/User.js — added password: { type: String, required: true }",
+      "verification_type": "none",
+      "requires_human_verification": false,
+      "verification_checklist": null,
+      "verification_status": null
+    },
+    {
+      "task": "Write tests for POST /auth/register and POST /auth/login",
+      "agent": "test_writer",
+      "spawn_type": "temporal",
+      "status": "completed",
+      "started_at": "2026-03-17T10:04:00",
+      "completed_at": "2026-03-17T10:05:30",
+      "retries": 0,
+      "max_retries": 2,
+      "error": null,
+      "output": "created tests/auth.test.js — 8 test cases covering register, login, invalid credentials, missing fields",
+      "verification_type": "auto",
+      "requires_human_verification": false,
+      "verification_checklist": null,
+      "verification_status": null
     },
     {
       "task": "Create POST /auth/register and POST /auth/login routes",
       "agent": "routes_agent",
       "spawn_type": "temporal",
       "status": "in_progress",
-      "started_at": "2026-03-17T10:04:00",
+      "started_at": "2026-03-17T10:05:30",
       "completed_at": null,
       "retries": 0,
-      "notes": null
+      "max_retries": 2,
+      "error": null,
+      "output": null,
+      "verification_type": "auto",
+      "requires_human_verification": false,
+      "verification_checklist": null,
+      "verification_status": null
+    },
+    {
+      "task": "Run test suite against auth routes",
+      "agent": "test_runner",
+      "spawn_type": "temporal",
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "retries": 0,
+      "max_retries": 2,
+      "error": null,
+      "output": null,
+      "verification_type": "auto",
+      "requires_human_verification": false,
+      "verification_checklist": null,
+      "verification_status": null
     },
     {
       "task": "Create Bearer token middleware",
@@ -45,7 +95,13 @@
       "started_at": null,
       "completed_at": null,
       "retries": 0,
-      "notes": null
+      "max_retries": 2,
+      "error": null,
+      "output": null,
+      "verification_type": "none",
+      "requires_human_verification": false,
+      "verification_checklist": null,
+      "verification_status": null
     },
     {
       "task": "Mount auth router in app.js",
@@ -55,17 +111,13 @@
       "started_at": null,
       "completed_at": null,
       "retries": 0,
-      "notes": null
-    },
-    {
-      "task": "Run test suite",
-      "agent": "test_agent",
-      "spawn_type": "temporal",
-      "status": "pending",
-      "started_at": null,
-      "completed_at": null,
-      "retries": 0,
-      "notes": null
+      "max_retries": 2,
+      "error": null,
+      "output": null,
+      "verification_type": "none",
+      "requires_human_verification": false,
+      "verification_checklist": null,
+      "verification_status": null
     }
   ],
   "score": {
