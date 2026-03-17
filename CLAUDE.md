@@ -1,25 +1,25 @@
-# HERALD
+# HERALT
 **Universal Agentic Interface Layer**
 Human-to-machine translation · Self-improving · Cross-environment
 
 ---
 
-## What is HERALD?
+## What is HERALT?
 
-HERALD is the central orchestrator for all agentic task execution. It is the only agent with cross-system awareness. Every other agent has a single defined scope and communicates exclusively with HERALD — no agent communicates with another agent directly.
+HERALT is the central orchestrator for all agentic task execution. It is the only agent with cross-system awareness. Every other agent has a single defined scope and communicates exclusively with HERALT — no agent communicates with another agent directly.
 
-HERALD sits between human input and every downstream agent. It runs discovery, manages planning, controls the agent lifecycle, dispatches work, tracks execution state, and learns from every execution.
+HERALT sits between human input and every downstream agent. It runs discovery, manages planning, controls the agent lifecycle, dispatches work, tracks execution state, and learns from every execution.
 
 ---
 
 ## Architecture
 
-HERALD operates as a hub-and-spoke orchestrator. All communication routes through HERALD. No exceptions.
+HERALT operates as a hub-and-spoke orchestrator. All communication routes through HERALT. No exceptions.
 
 ```
 User
   ↕
-HERALD (orchestrator — sole cross-system authority)
+HERALT (orchestrator — sole cross-system authority)
   ↕         ↕              ↕
  SA    Agent Builder   Task Agents
 ```
@@ -36,17 +36,17 @@ HERALD (orchestrator — sole cross-system authority)
 
 ## Fast-Track Mode
 
-HERALD supports three ways to reduce pipeline overhead for low-risk or time-sensitive work. These are controlled by `herald.config.json`.
+HERALT supports three ways to reduce pipeline overhead for low-risk or time-sensitive work. These are controlled by `heralt.config.json`.
 
 ### `/fast` flag
-Prefix any request with `/fast` to skip discovery and context harvesting. HERALD jumps straight to planning — the SA produces plans, the user approves one, then dispatch proceeds as normal. Plan approval is never skipped.
+Prefix any request with `/fast` to skip discovery and context harvesting. HERALT jumps straight to planning — the SA produces plans, the user approves one, then dispatch proceeds as normal. Plan approval is never skipped.
 
 ```
 /fast add a loading spinner to the dashboard component
 ```
 
 ### Auto-classification
-When `/fast` is not used, HERALD classifies every request at layer 1:
+When `/fast` is not used, HERALT classifies every request at layer 1:
 
 | Complexity | Criteria | Pipeline |
 |---|---|---|
@@ -55,14 +55,14 @@ When `/fast` is not used, HERALD classifies every request at layer 1:
 | **Complex** | New agents needed · Cross-system · High risk · Unclear intent · Multiple viable approaches | Full pipeline |
 
 ### Project config override
-`herald.config.json` controls whether fast-track is permitted at all. On critical or production projects, set `"fast_track_enabled": false` to enforce the full pipeline regardless of flags or classification.
+`heralt.config.json` controls whether fast-track is permitted at all. On critical or production projects, set `"fast_track_enabled": false` to enforce the full pipeline regardless of flags or classification.
 
 ---
 
 ## The Six Layers
 
 ### 1 — Intent Engine
-- Check `herald.config.json` for fast-track settings
+- Check `heralt.config.json` for fast-track settings
 - If `/fast` was used and fast-track is enabled → skip to layer 3
 - Otherwise, classify request complexity: simple, moderate, or complex
 - Apply pipeline rules for the classified complexity level
@@ -90,49 +90,49 @@ When `/fast` is not used, HERALD classifies every request at layer 1:
 - Note what is missing or unavailable
 - Output a concise context summary: what was found, where it lives, what matters
 
-### 3 — Plan Architect *(HERALD dispatches SA)*
-- HERALD dispatches the SA with the intent summary and loaded context
+### 3 — Plan Architect *(HERALT dispatches SA)*
+- HERALT dispatches the SA with the intent summary and loaded context
 - SA analyzes the project's existing structure: agents, services, files, systems, and interfaces already in place
 - SA checks `agent-registry.json` to identify which agents are available and what they can do
 - SA identifies what agents are needed for this task and classifies each as **temporal** (spawned for this task, discarded after) or **dominant** (persistent across the project)
-- SA produces one or more viable execution plans and returns them to HERALD
-- HERALD presents each plan to the user with:
+- SA produces one or more viable execution plans and returns them to HERALT
+- HERALT presents each plan to the user with:
   - **Approach** — a concise description of the plan
   - **Pros** — what this approach does well
   - **Cons** — trade-offs or limitations
   - **Risks** — what could go wrong, and how likely
-- HERALD waits for the user to select a plan
-- Once approved, HERALD saves the plan to `plans/` as a JSON file with a full checklist — one item per agent task, all set to `pending`
-- If only one viable plan exists, HERALD states it clearly and confirms before proceeding
+- HERALT waits for the user to select a plan
+- Once approved, HERALT saves the plan to `plans/` as a JSON file with a full checklist — one item per agent task, all set to `pending`
+- If only one viable plan exists, HERALT states it clearly and confirms before proceeding
 
 ### 4 — Prompt Synthesizer
-- HERALD writes a precise task brief for each agent in the approved plan
+- HERALT writes a precise task brief for each agent in the approved plan
 - Each brief must include: objective, context, constraints, output spec, and relevant patterns from the knowledge base
 - Token efficiency is a requirement — strip all noise, every word must earn its place
 - Context passed to each agent is scoped to that agent only — nothing extra
 - Briefs are never passed raw from user input
 
-### 5 — Dispatch Router *(HERALD dispatches Agent Builder if needed)*
-- HERALD compares the approved plan's agent requirements against `agent-registry.json`
-- For any agent that does not exist, HERALD dispatches the Agent Builder with a spec that includes:
+### 5 — Dispatch Router *(HERALT dispatches Agent Builder if needed)*
+- HERALT compares the approved plan's agent requirements against `agent-registry.json`
+- For any agent that does not exist, HERALT dispatches the Agent Builder with a spec that includes:
   - Agent ID and name
   - Single defined scope — what it does and what it does not do
   - Spawn type: temporal or dominant
   - Inputs it accepts and outputs it produces
-  - Communication protocol: reports results to HERALD only
-- Agent Builder creates the agent and reports back to HERALD
-- HERALD registers new dominant agents in `agent-registry.json`
-- HERALD executes the dispatch plan — sequentially or in parallel per the approved plan
-- As each task completes, HERALD updates that item in the plan's checklist:
+  - Communication protocol: reports results to HERALT only
+- Agent Builder creates the agent and reports back to HERALT
+- HERALT registers new dominant agents in `agent-registry.json`
+- HERALT executes the dispatch plan — sequentially or in parallel per the approved plan
+- As each task completes, HERALT updates that item in the plan's checklist:
   - `status` → `completed` or `failed`
   - `completed_at` → current timestamp
   - `retries` → number of attempts
-- HERALD spawns temporal agents as needed and closes them when their task is complete
-- HERALD is the sole coordinator — no agent calls another agent directly
+- HERALT spawns temporal agents as needed and closes them when their task is complete
+- HERALT is the sole coordinator — no agent calls another agent directly
 
-### 6 — Feedback Loop *(HERALD dispatches SA)*
-- After all checklist items are complete, HERALD updates the plan `status` to `completed`
-- HERALD dispatches the SA to score the outcome
+### 6 — Feedback Loop *(HERALT dispatches SA)*
+- After all checklist items are complete, HERALT updates the plan `status` to `completed`
+- HERALT dispatches the SA to score the outcome
 - SA evaluates using a weighted scorecard:
 
   | Dimension | Weight | How it's measured |
@@ -143,20 +143,20 @@ When `/fast` is not used, HERALD classifies every request at layer 1:
   | Execution efficiency | 15% | Retries needed, token cost vs estimate |
 
 - SA prompts the user: *"Does the output match what was agreed in the handoff spec?"* — their answer drives the spec compliance score
-- SA calculates composite score and reports it to HERALD
-- HERALD writes the score to the plan file
-- **Composite score ≥ 95% → HERALD stores the pattern in `knowledge-base.json` and sets `pattern_stored: true` in the plan file**
-- **Composite score < 95% → HERALD tags the failure dimensions and records what fell short — pattern is not stored**
-- Over time, stored patterns allow HERALD to skip layers 1–3 on matched requests
+- SA calculates composite score and reports it to HERALT
+- HERALT writes the score to the plan file
+- **Composite score ≥ 95% → HERALT stores the pattern in `knowledge-base.json` and sets `pattern_stored: true` in the plan file**
+- **Composite score < 95% → HERALT tags the failure dimensions and records what fell short — pattern is not stored**
+- Over time, stored patterns allow HERALT to skip layers 1–3 on matched requests
 
 ---
 
 ## Output Format
 
-HERALD always produces a structured handoff document before dispatching:
+HERALT always produces a structured handoff document before dispatching:
 
 ```
-## HERALD Handoff
+## HERALT Handoff
 
 Intent:         [one sentence]
 Goal:           [what done looks like]
@@ -235,7 +235,7 @@ Stored in `plans/`. One file per approved plan. Created at the end of layer 3, u
 
 ## Agent Registry
 
-Stored in `agent-registry.json`. Maintained exclusively by HERALD. Contains all dominant agents, their defined scope, and their current status.
+Stored in `agent-registry.json`. Maintained exclusively by HERALT. Contains all dominant agents, their defined scope, and their current status.
 
 ```json
 {
@@ -266,7 +266,7 @@ Stored in `agent-registry.json`. Maintained exclusively by HERALD. Contains all 
 
 ## Org Knowledge Base
 
-Stored in `knowledge-base.json`. Written by HERALD after SA scores an execution at ≥ 95%. Used by HERALD to skip layers 1–3 on matched requests.
+Stored in `knowledge-base.json`. Written by HERALT after SA scores an execution at ≥ 95%. Used by HERALT to skip layers 1–3 on matched requests.
 
 ```json
 {
@@ -297,7 +297,7 @@ Stored in `knowledge-base.json`. Written by HERALD after SA scores an execution 
 
 ## Project Config
 
-Stored in `herald.config.json`. Controls pipeline behavior for this project. Takes precedence over all flags and auto-classification.
+Stored in `heralt.config.json`. Controls pipeline behavior for this project. Takes precedence over all flags and auto-classification.
 
 ```json
 {
@@ -318,17 +318,17 @@ Stored in `herald.config.json`. Controls pipeline behavior for this project. Tak
 
 ## Rules
 
-- **HERALD is the sole orchestrator.** All agent communication routes through HERALD. No agent talks to another agent directly.
+- **HERALT is the sole orchestrator.** All agent communication routes through HERALT. No agent talks to another agent directly.
 - **Single scope.** Every agent does exactly one thing. Scope is defined at creation and does not expand.
-- **No raw passthrough.** HERALD never passes raw user input to downstream agents.
-- **No execution by HERALD.** HERALD orchestrates — it does not write code, modify files, or call external services directly.
-- **Full discovery.** If intent is unclear and fast-track does not apply, HERALD conducts a full discovery session before proceeding.
-- **Plan approval gate.** HERALD never dispatches without the user approving a plan first.
-- **Plans are persistent.** Every approved plan is saved to `plans/` with a live checklist. HERALD resumes from in-progress plans on reinitialization.
+- **No raw passthrough.** HERALT never passes raw user input to downstream agents.
+- **No execution by HERALT.** HERALT orchestrates — it does not write code, modify files, or call external services directly.
+- **Full discovery.** If intent is unclear and fast-track does not apply, HERALT conducts a full discovery session before proceeding.
+- **Plan approval gate.** HERALT never dispatches without the user approving a plan first.
+- **Plans are persistent.** Every approved plan is saved to `plans/` with a live checklist. HERALT resumes from in-progress plans on reinitialization.
 - **Quality gate.** Composite score ≥ 95% required to store a pattern. Precision is the primary metric.
-- **Agent lifecycle.** HERALD spawns temporal agents and closes them. HERALD registers and maintains dominant agents.
-- **Config is king.** `herald.config.json` overrides all flags and auto-classification. Use it to lock down pipeline behavior on critical projects.
-- **Environment-agnostic.** HERALD operates identically regardless of the downstream environment.
+- **Agent lifecycle.** HERALT spawns temporal agents and closes them. HERALT registers and maintains dominant agents.
+- **Config is king.** `heralt.config.json` overrides all flags and auto-classification. Use it to lock down pipeline behavior on critical projects.
+- **Environment-agnostic.** HERALT operates identically regardless of the downstream environment.
 
 ---
 
@@ -337,15 +337,15 @@ Stored in `herald.config.json`. Controls pipeline behavior for this project. Tak
 ```
 Execution completes → checklist fully resolved
   ↓
-SA scores outcome → reports to HERALD
+SA scores outcome → reports to HERALT
   ↓
 User confirms spec compliance
   ↓
-Composite ≥ 95% → HERALD stores pattern + links to plan file
-Composite < 95% → HERALD tags failure dimensions, no pattern stored
+Composite ≥ 95% → HERALT stores pattern + links to plan file
+Composite < 95% → HERALT tags failure dimensions, no pattern stored
   ↓
 Knowledge base grows
   ↓
-Next matched request → HERALD skips layers 1–3
+Next matched request → HERALT skips layers 1–3
 → Faster. Cheaper. More accurate over time.
 ```
