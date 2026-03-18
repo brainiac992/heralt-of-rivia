@@ -64,19 +64,28 @@ When `/fast` is not used, HERALD classifies every request at layer 1:
 ### 1 — Intent Engine
 - Check `herald.config.json` for fast-track settings
 - If `/fast` was used and fast-track is enabled → skip to layer 3
+- **Read `context.md` if it exists** — load prior decisions, constraints, and failed approaches before proceeding
+
+**Domain Detection — runs first, before anything else:**
+- Scan the request for domain signals: industry keywords, integration names, data types, regulatory terms, platform names
+- Match against the Domain Library to identify which domain(s) the request touches
+- If a domain is matched, load its constraint checklist and ask those questions before any generic discovery, complexity classification, or technical direction
+- A request may span multiple domains — load all relevant checklists and merge, removing duplicates
+- **Never suggest a library, API, framework, or architecture before domain constraints are fully answered**
+- If no domain is matched, proceed with generic discovery below
+
+**Generic discovery dimensions (always apply after domain questions):**
+- **Intent** — what problem are you solving? what does success look like?
+- **Scope** — what is in and out of scope? what should not be touched?
+- **Constraints** — deadlines, budget, performance requirements, compliance
+- **Stack** — preferred languages, frameworks, libraries, platforms
+- **Format** — expected output format, file structure, naming conventions
+- **Timeline** — when does this need to be done? are there phases or milestones?
+- **Dependencies** — existing systems, APIs, or teams this work touches
+- **Risk tolerance** — how critical is this? what is the cost of failure?
+
 - Otherwise, classify request complexity: simple, moderate, or complex
 - Apply pipeline rules for the classified complexity level
-- **Read `context.md` if it exists** — load prior decisions, constraints, and failed approaches before proceeding
-- If proceeding with discovery, conduct a full session — ask as many questions as needed before proceeding
-- Discovery questions must cover all relevant dimensions:
-  - **Intent** — what problem are you solving? what does success look like?
-  - **Scope** — what is in and out of scope? what should not be touched?
-  - **Constraints** — deadlines, budget, performance requirements, compliance
-  - **Stack** — preferred languages, frameworks, libraries, platforms
-  - **Format** — expected output format, file structure, naming conventions
-  - **Timeline** — when does this need to be done? are there phases or milestones?
-  - **Dependencies** — existing systems, APIs, or teams this work touches
-  - **Risk tolerance** — how critical is this? what is the cost of failure?
 - Do not proceed until all dimensions are either answered or explicitly confirmed as not applicable
 - Do not guess. Do not assume. Do not proceed on uncertain intent.
 
@@ -163,6 +172,193 @@ When `/fast` is not used, HERALD classifies every request at layer 1:
 - **SA updates `context.md`** with any decisions made, constraints discovered, or failed approaches encountered during this execution — only entries that would change how a future task is approached
 - **Composite score ≥ 95% → HERALD stores the pattern in `knowledge-base.json` and sets `pattern_stored: true`**
 - **Composite score < 95% → HERALD tags the failure dimensions — pattern is not stored**
+
+---
+
+## Domain Library
+
+HERALD matches requests against this library at the start of Layer 1. Each domain defines the constraint questions that must be answered before any technical decision is made. This library is not exhaustive — when HERALD encounters a domain not listed here, it constructs a relevant constraint checklist from first principles and documents it in `context.md` for future sessions.
+
+---
+
+### Banking & Fintech
+**Signals:** bank, transaction, account, balance, statement, open banking, Plaid, TrueLayer, Yodlee, IBAN, SWIFT, ledger, reconciliation
+**Constraint questions:**
+- What country/region are your users in? (determines available APIs and regulatory framework)
+- Which banks or institutions need to be supported?
+- Do you have existing API credentials, or is provider selection open?
+- Is this for personal use only, or will real user financial data flow through it?
+- Any compliance requirements? (PSD2, PCI-DSS, GDPR, local financial regulation)
+- Will the app read data only, or also initiate payments/transfers?
+
+---
+
+### Healthcare & MedTech
+**Signals:** patient, medical, health, EHR, EMR, FHIR, HL7, prescription, clinic, hospital, diagnosis, HIPAA, PHI
+**Constraint questions:**
+- What country/region? (HIPAA in US, GDPR in EU, different frameworks elsewhere)
+- Will real patient data be stored or processed?
+- Does this integrate with existing EHR/EMR systems? Which ones?
+- Who are the end users — clinicians, patients, administrators?
+- Are there certification or regulatory approval requirements?
+- On-premise deployment required, or is cloud acceptable?
+
+---
+
+### Payments & E-commerce
+**Signals:** payment, checkout, cart, invoice, subscription, billing, Stripe, PayPal, refund, currency, merchant, POS
+**Constraint questions:**
+- Which countries/currencies need to be supported?
+- Do you have an existing payment provider, or is that open?
+- One-time payments, subscriptions, or both?
+- What is the expected transaction volume?
+- PCI-DSS compliance required?
+- Marketplace model (split payments) or single merchant?
+
+---
+
+### Auth & Identity
+**Signals:** login, authentication, SSO, OAuth, SAML, LDAP, MFA, session, JWT, identity, Auth0, Okta, Cognito, Active Directory
+**Constraint questions:**
+- Do you have an existing identity provider (IdP)?
+- SSO required? Which protocol — OAuth2, SAML, OIDC?
+- What user types exist and what are their permission levels?
+- MFA required?
+- Social login needed? Which providers?
+- Any compliance requirements around session management or data residency?
+
+---
+
+### Real Estate
+**Signals:** property, listing, MLS, mortgage, tenant, landlord, lease, Zillow, rental, real estate, property management
+**Constraint questions:**
+- What country/market? (MLS access varies by region)
+- Do you have existing MLS or listing API access?
+- Residential, commercial, or both?
+- Buyer/seller platform, rental platform, or property management?
+- Does it handle financial transactions (rent collection, deposits)?
+- Map/location features required? Preferred provider?
+
+---
+
+### Gaming
+**Signals:** game, player, score, leaderboard, multiplayer, Unity, Unreal, Steam, matchmaking, inventory, loot, achievement, game engine
+**Constraint questions:**
+- Target platform(s)? (PC, console, mobile, browser, VR)
+- Game engine already chosen, or open?
+- Single-player, multiplayer, or both? If multiplayer — real-time or turn-based?
+- Monetization model? (premium, free-to-play, subscriptions, in-app purchases)
+- Expected concurrent player count at launch?
+- Age rating target? (affects content and store requirements)
+- Existing backend infrastructure, or greenfield?
+
+---
+
+### Legal & Compliance
+**Signals:** contract, legal, compliance, GDPR, regulation, audit, policy, clause, jurisdiction, law, terms
+**Constraint questions:**
+- What jurisdiction(s) does this operate in?
+- Will the system store or process personally identifiable information (PII)?
+- Does it generate, store, or manage legal documents?
+- Who are the end users — legal professionals, businesses, or consumers?
+- Any audit trail or immutability requirements?
+- Does it need to integrate with court systems, e-signature providers, or legal databases?
+
+---
+
+### Education & EdTech
+**Signals:** student, course, LMS, curriculum, quiz, grade, classroom, SCORM, xAPI, tutor, learning, school, university
+**Constraint questions:**
+- K-12, higher education, corporate training, or consumer?
+- Existing LMS to integrate with? (Canvas, Moodle, Blackboard, Google Classroom)
+- FERPA or COPPA compliance required? (US — student data privacy, child data)
+- Synchronous (live classes) or asynchronous (self-paced), or both?
+- Content types needed — video, quizzes, assignments, certificates?
+- Single institution or multi-tenant platform?
+
+---
+
+### Travel & Logistics
+**Signals:** booking, flight, hotel, itinerary, route, shipment, tracking, GDS, Amadeus, freight, delivery, fleet, GPS
+**Constraint questions:**
+- Travel booking, logistics/shipping, or fleet management?
+- Existing provider APIs available? (GDS for travel, carrier APIs for logistics)
+- What geographies need to be covered?
+- Real-time tracking required?
+- Does it handle payments for bookings?
+- B2B, B2C, or internal tool?
+
+---
+
+### Social & Community
+**Signals:** post, feed, follow, like, comment, community, forum, messaging, notification, social, user-generated content
+**Constraint questions:**
+- Public platform or private community?
+- Expected user scale at launch and 12 months out?
+- Real-time features required? (live chat, notifications, feeds)
+- Content moderation requirements?
+- User-generated content — what types? (text, images, video)
+- Any age restrictions on the user base? (COPPA, GDPR-K implications)
+
+---
+
+### Infrastructure & DevOps
+**Signals:** deploy, CI/CD, pipeline, Kubernetes, Docker, cloud, AWS, GCP, Azure, terraform, monitoring, infrastructure
+**Constraint questions:**
+- Cloud provider already chosen, or open?
+- Existing infrastructure to integrate with or extend?
+- What environments are needed? (dev, staging, prod)
+- Compliance requirements for data residency or sovereignty?
+- Expected traffic scale and SLA requirements?
+- On-call and incident response process already in place?
+
+---
+
+### AI & Machine Learning
+**Signals:** model, training, inference, dataset, ML, AI, neural network, embedding, fine-tune, LLM, vector, prediction
+**Constraint questions:**
+- Building a model from scratch, fine-tuning an existing one, or integrating a third-party API?
+- What data is available for training/evaluation? Is it labelled?
+- Any data privacy constraints on the training data?
+- Inference latency requirements? (real-time vs. batch)
+- On-device, on-premise, or cloud inference?
+- Explainability or audit requirements on model decisions?
+
+---
+
+### IoT & Hardware
+**Signals:** device, sensor, firmware, embedded, MQTT, hardware, microcontroller, Arduino, Raspberry Pi, edge, BLE, Zigbee
+**Constraint questions:**
+- What hardware platform/microcontroller?
+- Connectivity: WiFi, BLE, Zigbee, LoRa, cellular, or wired?
+- Power constraints? (battery-operated vs. mains)
+- Does it need OTA (over-the-air) firmware updates?
+- What is the deployment environment? (industrial, consumer, outdoor)
+- Any certification requirements? (FCC, CE, UL)
+
+---
+
+### HR & Workforce
+**Signals:** employee, payroll, HR, onboarding, attendance, leave, performance, HRIS, ATS, recruitment, workforce
+**Constraint questions:**
+- What countries/jurisdictions need to be supported? (payroll laws vary significantly)
+- Existing HRIS to integrate with? (Workday, BambooHR, SAP, etc.)
+- Core modules needed — payroll, recruitment, performance, or all?
+- Employee count and expected growth?
+- Union or collective agreement rules to account for?
+- Self-service portal for employees, or admin-only?
+
+---
+
+### Media & Content
+**Signals:** video, audio, podcast, streaming, CDN, CMS, editorial, transcoding, subtitle, DRM, publishing, VOD
+**Constraint questions:**
+- Content types — video, audio, text, or mixed?
+- Live streaming, on-demand, or both?
+- DRM required?
+- Expected concurrent viewers / storage volume?
+- Existing CDN or media infrastructure?
+- Monetization model — subscription, ad-supported, pay-per-view?
 
 ---
 
