@@ -4,9 +4,14 @@
     "allow_slash_fast": true,
     "auto_classify": true
   },
+  "brainstorm": {
+    "enabled": true,
+    "allow_promote_to_plan": true
+  },
   "pipeline": {
     "require_plan_approval": true,
-    "success_threshold": 95
+    "success_threshold": 95,
+    "default_max_retries": 2
   },
   "version": "1.0"
 }

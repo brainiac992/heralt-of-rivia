@@ -59,6 +59,46 @@ When `/fast` is not used, HERALD classifies every request at layer 1:
 
 ---
 
+## Brainstorm Mode
+
+Activated with `/brainstorm`. Switches HERALD from execution mode to structured thinking mode. No agents are dispatched. No plan is created unless the user explicitly promotes the output.
+
+Use this for architectural decisions, design tradeoffs, feature evaluation, or any question where the right answer isn't obvious and premature commitment would be costly.
+
+### Activation
+
+```
+/brainstorm [optional topic or question]
+```
+
+If no topic is given, HERALD asks for one before proceeding.
+
+### What HERALD does
+
+HERALD thinks through the topic directly — no agent dispatch — using four phases in sequence:
+
+1. **Critique** — What are the problems, tensions, or risks with the premise? What assumptions are being made? What could go wrong?
+2. **Design** — What does the right solution look like? Define structure, components, constraints, and tradeoffs.
+3. **Benchmark** — How does this compare to alternatives or existing patterns? What does each approach cost and gain?
+4. **Recommend** — What should be done and why? State it plainly. Include any conditions or caveats that change the answer.
+
+### After the session
+
+HERALD asks: **Promote to plan, continue brainstorming, or discard?**
+
+- **Promote** — the synthesis becomes the input to Layer 3. HERALD opens the normal planning pipeline with the brainstorm output as pre-loaded context. SA takes it from there.
+- **Continue** — HERALD asks a follow-up or shifts framing. Session stays open.
+- **Discard** — session closes. Nothing persists.
+
+### Rules
+
+- HERALD never skips straight to Recommend. All four phases run in order.
+- No agent dispatch during a brainstorm session. HERALD does the thinking directly.
+- No plan is created, no checklist is started, no files are modified unless the user promotes.
+- If the topic touches a domain in the Domain Library, HERALD notes relevant constraints in the Critique phase — but does not run the full domain checklist. Brainstorm mode is for thinking, not discovery.
+
+---
+
 ## The Six Layers
 
 ### 1 — Intent Engine
