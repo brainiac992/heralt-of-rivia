@@ -1,19 +1,68 @@
 # HERALD
-
 **Universal Agentic Interface Layer**
-Human-to-machine translation · Self-improving · Cross-environment
+Human-to-machine translation · Risk-aware · Self-improving · Cross-environment
 
 ---
 
-HERALD is a drop-in orchestration layer for Claude Code. It sits between you and every downstream agent — running discovery, managing planning, controlling the agent lifecycle, and learning from every execution.
-
-Every agent has a single defined scope. All communication routes through HERALD. No agent talks to another agent directly.
+HERALD is a drop-in orchestration layer for Claude Code. It sits between you and every downstream agent — enforcing plan approval, flagging destructive actions, preventing scope creep, managing context, and learning from every execution.
 
 ## Why it exists
 
-Without an orchestration layer, AI coding agents receive unstructured input, guess at intent, and execute without a plan. This produces inconsistent results, scope creep, wasted tokens, and repeated failures on the same class of problem.
+AI coding agents left to their own devices guess at intent, execute without a plan, modify files they were never asked to touch, and run destructive operations without warning. These aren't theoretical risks — they are documented production failures:
 
-HERALD fixes this with a six-layer pipeline and a hub-and-spoke agent architecture.
+- A developer lost nine days of work when an AI agent interpreted "freeze the code" as permission to delete a production database
+- An AWS environment went down for 13 hours after an AI tool decided to "delete and recreate" it
+- 45% of developers in Stack Overflow's 2025 survey named "almost right" AI code as their top frustration
+- Claude Code GitHub issue #21451 (545 upvotes): agents abort mid-edit when tokens run out, leaving broken codebases
+- Developers hit a binary choice: approve every shell command individually, or run with `--dangerously-skip-permissions`
+
+HERALD is the orchestration layer that addresses these failures structurally.
+
+## What HERALD solves
+
+| Documented issue | Source | HERALD's fix |
+|---|---|---|
+| Weak plan mode — no persistence, no control | HN thread, 591 comments | Persistent JSON plan files, user-approved before any execution |
+| Binary permission model — all or nothing | Repeated pattern across HN + GitHub | Risk Gate with `safe / caution / destructive` classification per task |
+| Token bloat from over-broad context | Multiple independent workarounds built | Layer 4 scopes context to each agent only — nothing extra |
+| Transparency removed — "Read 3 files" tells you nothing | HN #4 ranking, 702 comments | Full output captured per checklist item — complete record of every action |
+| Code quality drift and over-engineered solutions | CodeRabbit: 1.7× more issues in AI PRs | Acceptance criteria defined before code is written; dependency review flags bloat |
+| Sycophancy — "You're absolutely right!" on everything | GitHub #3382, 874 upvotes | Every plan must include a genuine challenge; agreement is never the default |
+| Context rot — output degrades as sessions grow | Near-universal among heavy users | Proactive checkpoint at 75% context — SA summarizes state, clears noise, continues cleanly |
+| Destructive actions without warning | Production incidents at AWS, Replit, others | Risk Gate + Destructive Pattern Scan fires before any irreversible operation |
+
+## The pipeline
+
+```
+1. Intent Engine      — domain detection, discovery, complexity classification
+2. Context Harvester  — load only what's relevant; resume in-progress plans
+3. Plan Architect     — SA produces plans with token estimates and genuine challenges; user selects one
+4. Prompt Synthesizer — scoped briefs per agent; no raw input passthrough
+5. Dispatch Router    — Risk Gate, Destructive Pattern Scan, Context Checkpoint, token tracking
+6. Feedback Loop      — mandatory scoring; SA updates context store; patterns stored at ≥ 95%
+```
+
+## Safety & quality gates
+
+**Risk Gate** — before any `destructive` task executes, HERALD surfaces what could be lost, the safe default, and the risky alternative. Silence always takes the safe default.
+
+**Destructive Pattern Scan** — after an agent generates artifacts (SQL, migrations, shell scripts), HERALD scans for `DROP TABLE`, `TRUNCATE`, `DELETE FROM` without `WHERE`, `rm -rf`, and similar patterns before execution. Catches cases where the task description looked safe but the generated code isn't.
+
+**Test-First Gate** — for every logic or API task: `test_writer → code_agent → test_runner`. Acceptance criteria are encoded as tests before any implementation begins.
+
+**Human Verification Gate** — for UI, visual design, and UX tasks: HERALD presents a binary checklist to the user before continuing dispatch.
+
+**Context Checkpoint** — at 75% context usage, SA writes a compact state summary to `context.md` and the plan file, clears non-essential history, and continues. Never relies on `/compact`.
+
+**Anti-sycophancy** — every plan must include at least one genuine challenge — a risk, a hidden assumption, or a viable alternative. "This looks good" alone is never sufficient.
+
+## Modes
+
+| Mode | Activation | What it does |
+|---|---|---|
+| **Fast-track** | `/fast [request]` | Skips discovery and context loading — jumps straight to planning |
+| **Brainstorm** | `/brainstorm [topic]` | Structured thinking mode: Critique → Design → Benchmark → Recommend. No dispatch. Output can be promoted to a real plan. |
+| **Score** | `/score` | Manually triggers Layer 6 if it was missed — runs full scoring, updates context store, conditionally stores pattern |
 
 ## Architecture
 
@@ -21,26 +70,17 @@ HERALD fixes this with a six-layer pipeline and a hub-and-spoke agent architectu
 User
   ↕
 HERALD (orchestrator — sole cross-system authority)
-  ↕         ↕              ↕
- SA    Agent Builder   Task Agents
+  ↕              ↕               ↕
+ SA        Agent Builder    Task Agents
 ```
 
-| Agent | Scope |
-|---|---|
-| **SA** | Validate specs, plan execution, classify agents needed, score outcomes |
-| **Agent Builder** | Build new agents to spec — purpose, scope, spawn type, instructions |
-| **Task agents** | Execute one defined task. Nothing else. |
+All communication routes through HERALD. No agent communicates with another agent directly.
 
-Agents are either **dominant** (persistent across the project) or **temporal** (spawned for one task, discarded after). HERALD manages both.
-
-## The pipeline
-
-1. **Intent Engine** — full BA-style discovery session across intent, scope, constraints, stack, format, timeline, dependencies, and risk
-2. **Context Harvester** — load only what's relevant to the task
-3. **Plan Architect** — SA analyzes project structure, checks the agent registry, produces viable plans; user selects one before anything executes
-4. **Prompt Synthesizer** — HERALD writes scoped briefs for each agent
-5. **Dispatch Router** — HERALD checks for missing agents, dispatches Agent Builder if needed, then executes the plan
-6. **Feedback Loop** — SA scores the outcome (spec compliance, scope adherence, correctness, efficiency); ≥ 95% composite stores the pattern
+| Agent | Spawn type | Scope |
+|---|---|---|
+| **SA** | Dominant | Validate specs, plan, classify, score, update context store |
+| **Agent Builder** | Dominant | Build new agents to spec |
+| **Task agents** | Temporal or Dominant | Execute one defined task. Nothing else. |
 
 ## Quickstart
 
@@ -55,13 +95,14 @@ cd my-project
 **Option B — Add HERALD to an existing project:**
 
 ```bash
-git clone https://github.com/brainiac992/herald-of-rivia.git herald-of-rivia
+git clone https://github.com/brainiac992/herald-of-rivia.git herald-tmp
 
-cp herald-of-rivia/CLAUDE.md your-project/CLAUDE.md
-cp herald-of-rivia/knowledge-base.json your-project/knowledge-base.json
-cp herald-of-rivia/agent-registry.json your-project/agent-registry.json
-cp herald-of-rivia/herald.config.json your-project/herald.config.json
-mkdir your-project/plans
+cp herald-tmp/CLAUDE.md your-project/CLAUDE.md
+cp herald-tmp/herald.config.json your-project/herald.config.json
+cp herald-tmp/agent-registry.json your-project/agent-registry.json
+cp herald-tmp/knowledge-base.json your-project/knowledge-base.json
+mkdir -p your-project/plans your-project/.claude/commands
+cp herald-tmp/.claude/commands/* your-project/.claude/commands/
 ```
 
 Open in Claude Code. HERALD activates on the next request.
@@ -70,22 +111,26 @@ Open in Claude Code. HERALD activates on the next request.
 
 | File | Purpose |
 |---|---|
-| `CLAUDE.md` | Drop-in activation file — the full HERALD spec |
-| `agent-registry.json` | Registry of all dominant agents, their scope and status |
-| `knowledge-base.json` | Patterns from successful executions (grows over time) |
-| `examples/handoff-example.md` | Sample HERALD handoff document |
-| `examples/pattern-example.json` | Sample knowledge base entry |
-| `examples/plan-example.json` | Sample plan file with live checklist |
+| `CLAUDE.md` | Full HERALD spec — drop-in activation file |
+| `herald.config.json` | Fast-track, brainstorm, token budget, pipeline config |
+| `agent-registry.json` | Registry of all dominant agents |
+| `knowledge-base.json` | Patterns from scored executions (grows over time) |
+| `context.md` | Session context store — decisions, constraints, failed approaches |
+| `.claude/commands/brainstorm.md` | `/brainstorm` slash command |
+| `.claude/commands/score.md` | `/score` slash command |
+| `plans/` | Created at runtime — approved plans with live checklists |
+| `examples/` | Sample handoff, plan, and pattern files |
 | `export/herald.html` | Full visual presentation (open in browser) |
-| `export/herald.pdf` | Presentation PDF for sharing |
-| `plans/` | Created at runtime — HERALD writes approved plans here |
 
-## Rules
+## Core rules
 
 - HERALD is the sole orchestrator — no agent-to-agent communication
 - Every agent has one defined scope and does not exceed it
 - No agent receives raw user input — all input is translated by HERALD
 - Nothing executes without the user approving a plan first
+- Destructive tasks are flagged at plan approval, not at execution
+- Silence is safe — no stated preference means safe default, always
+- Layer 6 is mandatory — no execution closes without scoring
 - Patterns are only stored when composite score ≥ 95%
 
 ## Contributing
@@ -103,4 +148,4 @@ MIT — see [LICENSE](LICENSE).
 
 ---
 
-Built to make AI coding accessible to everyone.
+Built on real failure patterns. Designed to prevent the next one.

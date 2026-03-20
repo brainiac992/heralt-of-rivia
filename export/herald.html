@@ -563,6 +563,7 @@
   <div class="cover-sub">Universal Agentic Interface Layer</div>
   <div class="cover-pills">
     <div class="cover-pill">Human-to-machine translation</div>
+    <div class="cover-pill">Risk-aware</div>
     <div class="cover-pill">Self-improving</div>
     <div class="cover-pill">Cross-environment</div>
     <div class="cover-pill">Open source · MIT</div>
@@ -582,9 +583,30 @@
   <div class="stat-row">
     <div class="stat-card"><div class="stat-num">6</div><div class="stat-label">Pipeline Layers</div></div>
     <div class="stat-card"><div class="stat-num"><span>95</span>%</div><div class="stat-label">Success Threshold</div></div>
-    <div class="stat-card"><div class="stat-num">3</div><div class="stat-label">Fast-track Modes</div></div>
-    <div class="stat-card"><div class="stat-num"><span>∞</span></div><div class="stat-label">Self-improving</div></div>
+    <div class="stat-card"><div class="stat-num">6</div><div class="stat-label">Safety &amp; Quality Gates</div></div>
+    <div class="stat-card"><div class="stat-num"><span>8</span></div><div class="stat-label">Documented Issues Fixed</div></div>
   </div>
+</div>
+
+<!-- ══════════ WHAT IT SOLVES ══════════ -->
+<div class="section">
+  <div class="section-label"><div class="dot"></div><h2>What HERALD Solves</h2></div>
+  <div class="section-divider"></div>
+  <p>Every fix is grounded in a documented, reported failure — not a theoretical edge case.</p>
+
+  <table class="complexity-table" style="border-spacing:0 10px">
+    <thead><tr><th>Reported Issue</th><th>Source</th><th>HERALD's Fix</th></tr></thead>
+    <tbody>
+      <tr class="complex"><td style="width:260px;font-size:13px;font-weight:600">Weak plan mode — no persistence or control</td><td style="color:#64748b;font-size:13px">HN thread · 591 comments</td><td style="font-size:13px">Persistent JSON plans, user-approved before any execution</td></tr>
+      <tr class="complex"><td style="font-size:13px;font-weight:600">Binary permission model — all or nothing</td><td style="color:#64748b;font-size:13px">GitHub + HN · repeated pattern</td><td style="font-size:13px">Risk Gate · safe / caution / destructive per task</td></tr>
+      <tr class="moderate"><td style="font-size:13px;font-weight:600">Token bloat from over-broad context</td><td style="color:#64748b;font-size:13px">Multiple workarounds built</td><td style="font-size:13px">Layer 4 scopes context per agent — nothing extra</td></tr>
+      <tr class="moderate"><td style="font-size:13px;font-weight:600">Transparency removed — "Read 3 files"</td><td style="color:#64748b;font-size:13px">HN #4 · 702 comments</td><td style="font-size:13px">Full output captured per checklist item</td></tr>
+      <tr class="moderate"><td style="font-size:13px;font-weight:600">Code quality drift &amp; over-engineered solutions</td><td style="color:#64748b;font-size:13px">CodeRabbit · 1.7× more issues in AI PRs</td><td style="font-size:13px">Acceptance criteria before code; dependency review required</td></tr>
+      <tr class="moderate"><td style="font-size:13px;font-weight:600">Sycophancy — "You're absolutely right!"</td><td style="color:#64748b;font-size:13px">GitHub #3382 · 874 upvotes</td><td style="font-size:13px">Every plan must include a genuine challenge</td></tr>
+      <tr class="simple"><td style="font-size:13px;font-weight:600">Context rot — quality degrades mid-session</td><td style="color:#64748b;font-size:13px">Near-universal · heavy users</td><td style="font-size:13px">Proactive checkpoint at 75% — SA summarizes, clears noise</td></tr>
+      <tr class="simple"><td style="font-size:13px;font-weight:600">Destructive actions without warning</td><td style="color:#64748b;font-size:13px">AWS 13h outage · DB deletions</td><td style="font-size:13px">Risk Gate + Destructive Pattern Scan before execution</td></tr>
+    </tbody>
+  </table>
 </div>
 
 <!-- ══════════ ARCHITECTURE ══════════ -->
@@ -811,6 +833,30 @@
   </table>
 </div>
 
+<!-- ══════════ MODES ══════════ -->
+<div class="section">
+  <div class="section-label"><div class="dot"></div><h2>Modes</h2></div>
+  <div class="section-divider"></div>
+  <p>Three slash commands that change how HERALD operates — without changing the pipeline's safety guarantees.</p>
+  <div class="fast-cards">
+    <div class="fast-card">
+      <div class="fc-icon" style="background:#EFF6FF">⚡</div>
+      <div class="fc-title">/fast</div>
+      <p class="fc-desc">Skips discovery and context loading. Jumps straight to SA planning. Plan approval is never skipped. Use for low-risk, well-understood tasks.</p>
+    </div>
+    <div class="fast-card">
+      <div class="fc-icon" style="background:#F5F3FF">🧠</div>
+      <div class="fc-title">/brainstorm</div>
+      <p class="fc-desc">Structured thinking mode. Runs <strong>Critique → Design → Benchmark → Recommend</strong>. No agents dispatched, no plan created. Output can be promoted to a real plan.</p>
+    </div>
+    <div class="fast-card">
+      <div class="fc-icon" style="background:#F0FDF4">✓</div>
+      <div class="fc-title">/score</div>
+      <p class="fc-desc">Manually triggers Layer 6 if it was missed. Runs full scoring against the last completed plan — updates context store and conditionally stores pattern.</p>
+    </div>
+  </div>
+</div>
+
 <!-- ══════════ SIX LAYERS ══════════ -->
 <div class="section page-break">
   <div class="section-label"><div class="dot"></div><h2>The Six Layers</h2></div>
@@ -900,10 +946,13 @@
         <div class="layer-owner">HERALD dispatches SA</div>
         <ul>
           <li>SA analyzes project structure and checks <code>agent-registry.json</code></li>
-          <li>SA classifies each required agent as <strong>temporal</strong> or <strong>dominant</strong></li>
-          <li>SA produces viable plans → HERALD presents each with Approach · Pros · Cons · Risks</li>
-          <li>HERALD waits for user to select a plan — never proceeds without approval</li>
-          <li>Approved plan saved to <code>plans/</code> with a full checklist (all items: pending)</li>
+          <li>SA classifies every task by <strong>risk level</strong> (safe / caution / destructive) and <strong>verification type</strong> (auto / human / none)</li>
+          <li>SA defines explicit acceptance criteria per task — not just what to build, but what correct looks like</li>
+          <li>SA runs dependency and architecture review — flags over-engineered approaches before any code is written</li>
+          <li>SA must surface at least one genuine challenge per plan — a risk, assumption, or alternative</li>
+          <li>SA estimates token cost for each plan option — shown at approval time</li>
+          <li>HERALD presents plans with Approach · Pros · Cons · Risks · Token estimate · Challenge — waits for user to select</li>
+          <li>Approved plan saved to <code>plans/</code> with full checklist (all items: pending)</li>
         </ul>
       </div>
     </div>
@@ -924,11 +973,13 @@
         <h3>Dispatch Router</h3>
         <div class="layer-owner">HERALD dispatches Agent Builder if needed</div>
         <ul>
-          <li>Compare plan requirements against <code>agent-registry.json</code></li>
-          <li>Missing agents → Agent Builder dispatched with full spec; new dominant agents registered</li>
-          <li>Execute in order — sequential or parallel per approved plan</li>
-          <li>Each completed task updates the checklist: status · timestamp · retries</li>
-          <li>Temporal agents closed on task completion</li>
+          <li>Compare plan requirements against <code>agent-registry.json</code> — missing agents trigger Agent Builder</li>
+          <li><strong>Risk Gate</strong> — fires before any destructive task: surfaces what could be lost, safe default, and risky alternative. Silence = safe default.</li>
+          <li><strong>Destructive Pattern Scan</strong> — scans generated artifacts (SQL, migrations, scripts) for DROP, TRUNCATE, DELETE without WHERE, rm -rf. Escalates risk level and re-fires Risk Gate if matched.</li>
+          <li><strong>Context Checkpoint</strong> — at 75% context usage, SA writes a compact state summary, clears non-essential history, continues cleanly. Never relies on /compact.</li>
+          <li><strong>Token Tracking</strong> — monitors cumulative usage; warns before budget is exceeded; user chooses continue, pause, or cancel.</li>
+          <li>Full output captured per checklist item — scanned for errors and destructive patterns before marked complete</li>
+          <li>Failures trigger retry with changed brief, or user escalation with specific options</li>
         </ul>
       </div>
     </div>
@@ -945,6 +996,39 @@
           <li><strong>&lt; 95% → failure dimensions tagged, no pattern stored</strong></li>
         </ul>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ SAFETY & QUALITY GATES ══════════ -->
+<div class="section">
+  <div class="section-label"><div class="dot"></div><h2>Safety &amp; Quality Gates</h2></div>
+  <div class="section-divider"></div>
+  <p>Six structural gates that fire at specific points in the pipeline. Each addresses a documented failure mode. None can be skipped without explicit justification.</p>
+  <div class="rules-grid">
+    <div class="rule-card" style="border-left-color:var(--red)">
+      <div class="rc-title" style="color:var(--red)">Risk Gate</div>
+      <p class="rc-body">Before any <code>destructive</code> task executes, HERALD presents what could be lost, the safe default, and the risky alternative. Silence always takes the safe default — consent is never inferred.</p>
+    </div>
+    <div class="rule-card" style="border-left-color:var(--red)">
+      <div class="rc-title" style="color:var(--red)">Destructive Pattern Scan</div>
+      <p class="rc-body">After artifacts are generated, HERALD scans for DROP, TRUNCATE, DELETE without WHERE, rm -rf, and similar patterns. Any match escalates risk level and re-fires the Risk Gate before execution.</p>
+    </div>
+    <div class="rule-card" style="border-left-color:var(--green)">
+      <div class="rc-title" style="color:var(--green)">Test-First Gate</div>
+      <p class="rc-body">For every logic or API task: <code>test_writer → code_agent → test_runner</code>. Acceptance criteria are encoded as tests before any implementation begins. Cannot be waived without explicit justification.</p>
+    </div>
+    <div class="rule-card" style="border-left-color:var(--blue)">
+      <div class="rc-title" style="color:var(--blue)">Human Verification Gate</div>
+      <p class="rc-body">For UI, visual design, and UX tasks: HERALD presents a binary checklist (pass/fail) to the user before continuing dispatch. Never fires for logic or data tasks.</p>
+    </div>
+    <div class="rule-card" style="border-left-color:var(--cyan)">
+      <div class="rc-title" style="color:#0891b2">Context Checkpoint</div>
+      <p class="rc-body">At 75% context usage, SA writes a compact state summary — what's done, what's pending, key decisions. Non-essential history is cleared. Dispatch continues from the summary. Never relies on /compact.</p>
+    </div>
+    <div class="rule-card" style="border-left-color:var(--amber)">
+      <div class="rc-title" style="color:#92400E">Anti-Sycophancy</div>
+      <p class="rc-body">Every plan must include at least one genuine challenge — a risk, a hidden assumption, or a viable alternative. "This looks good" alone is never an acceptable plan review. Agreement is not a default response.</p>
     </div>
   </div>
 </div>
@@ -1053,9 +1137,12 @@
     <div class="rule-card"><div class="rc-title">No raw passthrough</div><p class="rc-body">HERALD never passes raw user input to downstream agents. All input is translated first.</p></div>
     <div class="rule-card"><div class="rc-title">Plan approval gate</div><p class="rc-body">HERALD never dispatches without the user approving a plan first. Always.</p></div>
     <div class="rule-card"><div class="rc-title">Plans are persistent</div><p class="rc-body">Every approved plan is saved with a live checklist. HERALD resumes in-progress plans on reinitialization.</p></div>
+    <div class="rule-card"><div class="rc-title">Silence is safe</div><p class="rc-body">When a task is destructive and the user has no stated preference, HERALD takes the safe default. Consent for irreversible actions is never inferred.</p></div>
+    <div class="rule-card"><div class="rc-title">Destructive tasks flagged early</div><p class="rc-body">Users see and acknowledge risk at plan approval — not mid-execution when it is too late to stop.</p></div>
+    <div class="rule-card"><div class="rc-title">Layer 6 is mandatory</div><p class="rc-body">No execution closes without scoring. HERALD presents the Layer 6 prompt immediately when the last checklist item completes. Cannot be deferred.</p></div>
+    <div class="rule-card"><div class="rc-title">No sycophancy</div><p class="rc-body">Every plan must include a genuine challenge. Agreement is not a default response. "This looks good" alone is never sufficient.</p></div>
     <div class="rule-card"><div class="rc-title">Config is king</div><p class="rc-body"><code>herald.config.json</code> overrides all flags and auto-classification. Lock down critical projects here.</p></div>
     <div class="rule-card"><div class="rc-title">Quality gate</div><p class="rc-body">Composite score ≥ 95% required to store a pattern. Keeps the knowledge base clean and trustworthy.</p></div>
-    <div class="rule-card"><div class="rc-title">Agent lifecycle</div><p class="rc-body">HERALD spawns temporal agents and closes them. HERALD registers and maintains dominant agents.</p></div>
     <div class="rule-card"><div class="rc-title">Environment-agnostic</div><p class="rc-body">HERALD operates identically regardless of the downstream environment — codebase, API, ERP, or any other system.</p></div>
   </div>
 </div>
@@ -1081,13 +1168,24 @@
   <span class="key">"approach"</span>:     <span class="str">"summary of the approved plan"</span>,
   <span class="key">"checklist"</span>: [
     {
-      <span class="key">"task"</span>:         <span class="str">"description of the task"</span>,
-      <span class="key">"agent"</span>:        <span class="str">"agent_id"</span>,
-      <span class="key">"spawn_type"</span>:   <span class="str">"temporal | dominant"</span>,
-      <span class="key">"status"</span>:       <span class="str">"pending | in_progress | completed | failed"</span>,
-      <span class="key">"started_at"</span>:   <span class="bool">null</span>,
-      <span class="key">"completed_at"</span>: <span class="bool">null</span>,
-      <span class="key">"retries"</span>:      <span class="num">0</span>
+      <span class="key">"task"</span>:                        <span class="str">"description of the task"</span>,
+      <span class="key">"agent"</span>:                       <span class="str">"agent_id"</span>,
+      <span class="key">"spawn_type"</span>:                  <span class="str">"temporal | dominant"</span>,
+      <span class="key">"status"</span>:                      <span class="str">"pending | in_progress | completed | failed"</span>,
+      <span class="key">"started_at"</span>:                  <span class="bool">null</span>,
+      <span class="key">"completed_at"</span>:                <span class="bool">null</span>,
+      <span class="key">"retries"</span>:                     <span class="num">0</span>,
+      <span class="key">"max_retries"</span>:                 <span class="num">2</span>,
+      <span class="key">"verification_type"</span>:           <span class="str">"auto | human | none"</span>,
+      <span class="key">"requires_human_verification"</span>: <span class="bool">false</span>,
+      <span class="key">"verification_checklist"</span>:      <span class="bool">null</span>,
+      <span class="key">"verification_status"</span>:         <span class="bool">null</span>,
+      <span class="key">"risk_level"</span>:                  <span class="str">"safe | caution | destructive"</span>,
+      <span class="key">"risk_summary"</span>:                <span class="bool">null</span>,
+      <span class="key">"safe_default"</span>:                <span class="bool">null</span>,
+      <span class="key">"risk_gate_status"</span>:            <span class="bool">null</span>,
+      <span class="key">"error"</span>:                       <span class="bool">null</span>,
+      <span class="key">"output"</span>:                      <span class="bool">null</span>
     }
   ],
   <span class="key">"score"</span>: {
@@ -1111,9 +1209,20 @@
     <span class="key">"allow_slash_fast"</span>: <span class="bool">true</span>,
     <span class="key">"auto_classify"</span>:    <span class="bool">true</span>
   },
+  <span class="key">"brainstorm"</span>: {
+    <span class="key">"enabled"</span>:               <span class="bool">true</span>,
+    <span class="key">"allow_promote_to_plan"</span>: <span class="bool">true</span>
+  },
+  <span class="key">"token_budget"</span>: {
+    <span class="key">"enabled"</span>:                  <span class="bool">true</span>,
+    <span class="key">"soft_limit"</span>:               <span class="num">50000</span>,
+    <span class="key">"warn_at"</span>:                  <span class="num">0.75</span>,
+    <span class="key">"context_checkpoint_at"</span>:   <span class="num">0.75</span>
+  },
   <span class="key">"pipeline"</span>: {
     <span class="key">"require_plan_approval"</span>: <span class="bool">true</span>,
-    <span class="key">"success_threshold"</span>:    <span class="num">95</span>
+    <span class="key">"success_threshold"</span>:    <span class="num">95</span>,
+    <span class="key">"default_max_retries"</span>:  <span class="num">2</span>
   },
   <span class="key">"version"</span>: <span class="str">"1.0"</span>
 }</div>
