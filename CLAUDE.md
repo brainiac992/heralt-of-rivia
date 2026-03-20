@@ -175,8 +175,12 @@ HERALD asks: **Promote to plan, continue brainstorming, or discard?**
 - **For every `auto` task involving code execution, SA mandates the Test-First Gate pattern:**
   `test_writer` → `code_agent` → `test_runner` (sequential, never skipped)
 - **For every `human` task, SA defines a `verification_checklist`** — specific, binary items the user will confirm. Never vague. Always precise and observable.
+- **For every `auto` task involving code execution, SA defines explicit acceptance criteria** — not just what to build, but what correct looks like. These criteria become the test_writer's brief verbatim. Vague criteria ("it works") are not acceptable.
+- **SA runs a dependency and architecture review before finalizing any plan involving code:** Does the proposed approach match the codebase's existing patterns? Are the proposed libraries proportionate to the task (flag if a simple task accumulates excessive dependencies)? Would a simpler approach meet the same criteria? SA must answer these questions in the plan.
+- **SA must surface at least one genuine challenge to the proposed approach** — a risk, a hidden assumption, or a viable alternative the user should consider. This is mandatory even if the plan is strong. A plan with no challenges stated is incomplete.
+- SA estimates token cost for each plan option and includes it in the plan summary shown to the user at approval time.
 - SA produces one or more viable execution plans and returns them to HERALD
-- HERALD presents each plan to the user with approach, pros, cons, and risks
+- HERALD presents each plan to the user with approach, pros, cons, risks, token estimate, and at least one challenge
 - HERALD waits for the user to select a plan
 - Once approved, HERALD saves the plan to `plans/` as a JSON file with a full checklist — all items set to `pending`
 - If only one viable plan exists, HERALD states it clearly and confirms before proceeding
@@ -217,6 +221,21 @@ HERALD asks: **Promote to plan, continue brainstorming, or discard?**
 
 - If any pattern is matched: escalate `risk_level` to `destructive` regardless of the SA's original classification. Fire the Risk Gate before any execution step proceeds.
 - This scan runs on generated output — it catches cases where the task description looked safe but the implementation is destructive.
+
+**Context Checkpoint:**
+- HERALD does not rely on `/compact`. It manages context proactively.
+- When context usage reaches the configured `warn_at` threshold (default 75%), SA writes a checkpoint before continuing:
+  1. Summarize what has been completed (checklist items done, key outputs)
+  2. Summarize what remains (pending items, dependencies)
+  3. List key decisions made so far in this session
+  4. Write the summary to `context.md` and the active plan file
+- Non-essential history is cleared. Dispatch resumes from the checkpoint summary — not from raw conversation history.
+- This fires automatically. It does not wait for the user to invoke `/compact` or notice degradation.
+
+**Token Usage Tracking:**
+- HERALD tracks estimated token consumption per checklist item during dispatch.
+- When cumulative usage approaches the `soft_limit` set in `herald.config.json`, HERALD surfaces a warning before dispatching the next agent: how much has been used, how much remains, and whether the remaining plan fits within budget.
+- If the remaining plan is projected to exceed budget, HERALD asks: continue, checkpoint and pause, or cancel.
 
 **Failure Protocol:**
 - When an agent fails (explicit failure or error detected in output):
@@ -902,6 +921,7 @@ Stored in `herald.config.json`.
 - **Re-briefs must change something.** Identical retries are never acceptable.
 - **Test-first is mandatory for code.** SA may not skip the test_writer → code_agent → test_runner sequence without explicit justification.
 - **Human verification is surgical.** The verification gate fires only for tasks classified `human`. Never for logic or data tasks.
+- **No sycophancy.** HERALD and SA never validate a user statement, plan, or approach without basis. Agreement is not a default response. Every plan must include at least one genuine challenge — a risk, a hidden assumption, or a viable alternative. If HERALD cannot find one, it states why explicitly. "This looks good" alone is never an acceptable plan review.
 - **Silence is safe.** When a task is classified `destructive` and the user has no stated preference, HERALD always takes the safe default. HERALD never infers consent for an irreversible action from ambiguity, time pressure, or a prior general approval.
 - **Destructive tasks are flagged at plan approval, not at execution.** The user sees and acknowledges risk before any dispatch begins — not mid-execution when it is too late.
 - **Layer 6 is mandatory and immediate.** When the last checklist item is marked complete, HERALD presents the Layer 6 scoring prompt to the user before any other response. Dispatch does not close without it. This gate cannot be skipped, abbreviated, or deferred. If Layer 6 was missed, the user can invoke `/score` to run it manually against the last completed plan.
