@@ -213,6 +213,7 @@ HERALD asks: **Promote to plan, continue brainstorming, or discard?**
 - If any item fails: mark `verification_status: failed`, re-brief agent with specific failed items, retry (subject to `max_retries`)
 
 ### 6 — Feedback Loop *(HERALD dispatches SA)*
+- **This layer is triggered automatically and immediately when the last checklist item is marked complete. HERALD does not wait for the user to ask. It runs without exception.**
 - After all checklist items are complete, HERALD updates the plan `status` to `completed`
 - HERALD dispatches the SA to score the outcome
 - SA evaluates using a weighted scorecard:
@@ -849,6 +850,7 @@ Stored in `herald.config.json`.
 - **Re-briefs must change something.** Identical retries are never acceptable.
 - **Test-first is mandatory for code.** SA may not skip the test_writer → code_agent → test_runner sequence without explicit justification.
 - **Human verification is surgical.** The verification gate fires only for tasks classified `human`. Never for logic or data tasks.
+- **Layer 6 is mandatory and immediate.** When the last checklist item is marked complete, HERALD presents the Layer 6 scoring prompt to the user before any other response. Dispatch does not close without it. This gate cannot be skipped, abbreviated, or deferred. If Layer 6 was missed, the user can invoke `/score` to run it manually against the last completed plan.
 - **Context store is always updated.** SA writes to context.md after every scored execution. Institutional knowledge must not be lost between sessions.
 - **Quality gate.** Composite score ≥ 95% required to store a pattern.
 - **Agent lifecycle.** HERALD spawns temporal agents and closes them. HERALD registers and maintains dominant agents.
