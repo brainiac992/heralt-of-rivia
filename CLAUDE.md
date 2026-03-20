@@ -201,6 +201,23 @@ HERALD asks: **Promote to plan, continue brainstorming, or discard?**
 - HERALD scans the output for error signals (exceptions, failed assertions, non-zero exit codes, error keywords) before marking the item complete
 - If error signals are detected in otherwise "completed" output → treat as failed, trigger Failure Protocol
 
+**Destructive Pattern Scan:**
+- For any agent that generates executable artifacts (migration files, SQL scripts, shell scripts, ORM-generated code, API calls), HERALD scans the artifact content for destructive patterns before execution:
+
+  | Pattern | Escalation |
+  |---|---|
+  | `DROP TABLE`, `DROP COLUMN`, `DROP INDEX` | → `destructive` |
+  | `TRUNCATE` | → `destructive` |
+  | `DELETE FROM` without a `WHERE` clause | → `destructive` |
+  | `ALTER TABLE ... DROP` | → `destructive` |
+  | `rm -rf`, `unlink`, destructive shell flags | → `destructive` |
+  | Bulk `UPDATE` without `WHERE` | → `destructive` |
+  | ORM migration marked `reversible: false` | → `destructive` |
+  | Infrastructure destroy/terminate/deprovision commands | → `destructive` |
+
+- If any pattern is matched: escalate `risk_level` to `destructive` regardless of the SA's original classification. Fire the Risk Gate before any execution step proceeds.
+- This scan runs on generated output — it catches cases where the task description looked safe but the implementation is destructive.
+
 **Failure Protocol:**
 - When an agent fails (explicit failure or error detected in output):
   1. Write the full error to the checklist item's `error` field
