@@ -163,6 +163,11 @@ HERALD asks: **Promote to plan, continue brainstorming, or discard?**
 - SA analyzes the project's existing structure: agents, services, files, systems, and interfaces already in place
 - SA checks `agent-registry.json` to identify which agents are available and what they can do
 - SA identifies what agents are needed for this task and classifies each as **temporal** or **dominant**
+- **SA classifies every task in the plan by risk level:**
+  - `safe` — read-only, additive, or fully reversible operations
+  - `caution` — modifies existing state but is recoverable (e.g. config change, file edit)
+  - `destructive` — irreversible or data-loss potential: database migrations, deletions, drops, truncations, overwrites, infrastructure teardown, credential resets, bulk data operations
+  - For every `destructive` task, SA must define: (1) what could be permanently lost, (2) the safe default action, (3) the risky alternative. These are written into the plan before user approval — the user sees the risk at plan approval time, not at execution time.
 - **SA classifies every task in the plan by verification type:**
   - `auto` — logic, APIs, data integrity, regressions: machine-verifiable via tests
   - `human` — UI placement, visual design, UX flows, brand compliance: requires human eyes
@@ -203,6 +208,32 @@ HERALD asks: **Promote to plan, continue brainstorming, or discard?**
   3. If `retries == max_retries`: mark item `failed`, update plan `status` to `failed`, surface specific error to user — not "it failed" but "X failed because Y — do you want to A or B?"
 - HERALD never silently swallows failures. Every failure produces a retry or an escalation.
 - Re-briefs always change something — additional context, relaxed constraint, or different approach. Never retry blindly.
+
+**Risk Gate:**
+- Before dispatching any task with `risk_level: destructive`, HERALD pauses and presents:
+  ```
+  Risk flagged — [task description]
+
+  What could be lost: [specific, concrete description]
+  Safe default:       [what HERALD will do if you have no preference]
+  Risky alternative:  [what was originally planned]
+
+  Proceed with safe default, proceed with original, or cancel?
+  ```
+- If the user has no preference or does not respond with a choice → HERALD takes the safe default. Always.
+- If the user explicitly chooses the risky alternative → HERALD proceeds, but logs the user's explicit confirmation in the checklist item's `output` field before executing.
+- HERALD never infers consent for a destructive action. Silence = safe default.
+
+**Safe defaults by category:**
+| Operation | Safe default |
+|---|---|
+| Database migration | Backup first, then migrate. Never run destructive migration without confirmed backup. |
+| Data deletion | Soft delete (mark inactive/deleted) over hard delete. Confirm scope before bulk operations. |
+| Schema change | Additive changes only (add column/table). Flag drops, renames, and truncations as destructive. |
+| File overwrite | Copy original to `.bak` before overwriting. |
+| Infrastructure teardown | Snapshot/export state before destroy. Flag production environments explicitly. |
+| Credential reset | Generate new credentials alongside old ones. Do not revoke old until new are confirmed working. |
+| Bulk data operation | Run on a subset first (limit 10 or equivalent). Confirm before full run. |
 
 **Human Verification Gate:**
 - After any agent with `requires_human_verification: true` completes, HERALD pauses dispatch
@@ -736,7 +767,11 @@ Stored in `plans/`. One file per approved plan. Created at end of layer 3, updat
       "verification_type": "auto | human | none",
       "requires_human_verification": false,
       "verification_checklist": null,
-      "verification_status": null
+      "verification_status": null,
+      "risk_level": "safe | caution | destructive",
+      "risk_summary": null,
+      "safe_default": null,
+      "risk_gate_status": null
     }
   ],
   "score": {
@@ -850,6 +885,8 @@ Stored in `herald.config.json`.
 - **Re-briefs must change something.** Identical retries are never acceptable.
 - **Test-first is mandatory for code.** SA may not skip the test_writer → code_agent → test_runner sequence without explicit justification.
 - **Human verification is surgical.** The verification gate fires only for tasks classified `human`. Never for logic or data tasks.
+- **Silence is safe.** When a task is classified `destructive` and the user has no stated preference, HERALD always takes the safe default. HERALD never infers consent for an irreversible action from ambiguity, time pressure, or a prior general approval.
+- **Destructive tasks are flagged at plan approval, not at execution.** The user sees and acknowledges risk before any dispatch begins — not mid-execution when it is too late.
 - **Layer 6 is mandatory and immediate.** When the last checklist item is marked complete, HERALD presents the Layer 6 scoring prompt to the user before any other response. Dispatch does not close without it. This gate cannot be skipped, abbreviated, or deferred. If Layer 6 was missed, the user can invoke `/score` to run it manually against the last completed plan.
 - **Context store is always updated.** SA writes to context.md after every scored execution. Institutional knowledge must not be lost between sessions.
 - **Quality gate.** Composite score ≥ 95% required to store a pattern.
