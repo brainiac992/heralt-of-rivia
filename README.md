@@ -133,6 +133,18 @@ Open in Claude Code. HERALD activates on the next request.
 - Layer 6 is mandatory — no execution closes without scoring
 - Patterns are only stored when composite score ≥ 95%
 
+## Architectural limits
+
+HERALD is an instruction layer. Its gates are instructions read and followed by the same model that executes the work. Under context pressure — long sessions, approaching token limits, a user bypassing a gate — the model may comply and skip enforcement. This is a fundamental property of instruction-following systems, not a flaw unique to HERALD.
+
+**What is reliable:** Human-in-the-loop gates (plan approval, Risk Gate) require explicit user confirmation and do not depend on model compliance. Plan files and `context.md` create recoverable state. `/score` provides a recovery path when Layer 6 is missed.
+
+**What the hook provides:** `.claude/hooks/herald-safety.sh` blocks `rm -rf` and `DROP DATABASE / DROP SCHEMA` at the Bash tool level — before the model has any opportunity to comply or not comply. This fires regardless of model behavior, context length, or user pressure.
+
+**What the hook does not cover:** Destructive patterns in generated files, `DELETE FROM` without `WHERE`, `TRUNCATE`, `DROP TABLE` — too context-dependent for a hook to distinguish approved from unapproved without false positives. The Destructive Pattern Scan in Layer 5 handles these, but it is model-enforced.
+
+**The right mental model:** HERALD makes the right behavior explicit and likely. The hook catches catastrophic Bash-level cases. Human approval gates are the reliable enforcement mechanism for everything in between. The system is as strong as the user's willingness to hold the gates.
+
 ## Contributing
 
 Pull requests are welcome. If you have a pattern that worked well, consider contributing it to `examples/`.

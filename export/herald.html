@@ -1254,6 +1254,33 @@
   </div>
 </div>
 
+<!-- ══════════ ARCHITECTURAL LIMITS ══════════ -->
+<div class="section">
+  <div class="section-label"><div class="dot" style="background:var(--amber)"></div><h2>Architectural Limits</h2></div>
+  <div class="section-divider"></div>
+
+  <div class="callout">
+    <p>HERALD is an instruction layer. Its gates are instructions read and followed by the same model that executes the work. Under context pressure — long sessions, approaching token limits, a user bypassing a gate — the model may comply and skip enforcement. <strong>This is a fundamental property of instruction-following systems, not a flaw unique to HERALD.</strong></p>
+  </div>
+
+  <div class="rules-grid" style="grid-template-columns: repeat(3,1fr)">
+    <div class="rule-card" style="border-left-color:var(--green)">
+      <div class="rc-title" style="color:var(--green)">What is reliable</div>
+      <p class="rc-body">Human-in-the-loop gates — plan approval and the Risk Gate — require explicit user confirmation. They do not depend on model compliance. Plan files and <code>context.md</code> create recoverable state that survives compliance failures.</p>
+    </div>
+    <div class="rule-card" style="border-left-color:var(--blue)">
+      <div class="rc-title" style="color:var(--blue)">What the hook provides</div>
+      <p class="rc-body"><code>.claude/hooks/herald-safety.sh</code> blocks <code>rm -rf</code> and <code>DROP DATABASE/SCHEMA</code> at the Bash tool level — before the model has any opportunity to comply or not comply. Fires regardless of model behavior, context length, or user pressure.</p>
+    </div>
+    <div class="rule-card" style="border-left-color:var(--amber)">
+      <div class="rc-title" style="color:#92400E">What the hook does not cover</div>
+      <p class="rc-body">Destructive patterns in generated files, <code>DELETE FROM</code> without <code>WHERE</code>, <code>TRUNCATE</code>, <code>DROP TABLE</code> — too context-dependent without high false positive rate. The Destructive Pattern Scan in Layer 5 handles these, but it is model-enforced.</p>
+    </div>
+  </div>
+
+  <p style="margin-top:8px"><strong>The right mental model:</strong> HERALD makes the right behavior explicit and likely. The hook catches catastrophic Bash-level cases. Human approval gates are the reliable enforcement mechanism for everything in between. The system is as strong as the user's willingness to hold the gates.</p>
+</div>
+
 </div><!-- /content -->
 
 <div class="footer">

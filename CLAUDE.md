@@ -953,3 +953,26 @@ Next matched request   → HERALD skips layers 1–3
 Next session           → HERALD reads context.md, no rediscovery needed
 → Faster. Cheaper. More accurate over time.
 ```
+
+---
+
+## Architectural Limits
+
+HERALD is an instruction layer. Its gates — the Risk Gate, Test-First Gate, Layer 6 requirement, anti-sycophancy rule, context checkpoint — are instructions read and followed by the same model that executes the work. Under sufficient context pressure, a long session, or a user bypassing gates, the model may comply and skip enforcement. This is not a flaw unique to HERALD. It is a fundamental property of instruction-following systems.
+
+**What is reliable:**
+- Human-in-the-loop gates (plan approval, Risk Gate) require explicit user confirmation — they do not depend on model compliance
+- Plan files and `context.md` create recoverable state that survives compliance failures
+- `/score` provides a recovery path when Layer 6 is missed
+
+**What the hook provides:**
+- `PreToolUse` hooks on Bash commands block `rm -rf` and `DROP DATABASE / DROP SCHEMA` at the tool level — before the model has any opportunity to comply or not comply
+- The hook fires regardless of model behavior, context length, or user pressure
+- Hook script: `.claude/hooks/herald-safety.sh`
+
+**What the hook does not cover:**
+- Destructive patterns in generated files (SQL migrations, scripts) — the Destructive Pattern Scan in Layer 5 handles these, but it is model-enforced
+- `DELETE FROM` without `WHERE`, `TRUNCATE`, `DROP TABLE` — too context-dependent for a hook to distinguish approved from unapproved operations without false positives
+- Any situation where the model skips a gate that requires user confirmation — the user is the enforcer there
+
+**The right mental model:** HERALD makes the right behavior explicit and likely. The hook catches the genuinely catastrophic Bash-level cases. Human approval gates are the reliable enforcement mechanism for everything in between. The system is as strong as the user's willingness to hold the gates.
