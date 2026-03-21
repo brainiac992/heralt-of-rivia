@@ -9,8 +9,12 @@
 # Patterns blocked:
 #   rm -rf (and common flag variants)
 #   DROP DATABASE / DROP SCHEMA
+#   prisma migrate reset (always destructive — drops and recreates the entire database)
+#   prisma db push --force-reset (destructive variant of db push)
 #
 # Patterns intentionally NOT blocked here (too context-dependent, high false positive rate):
+#   prisma db push (without --force-reset) — legitimate in dev; Deployment Script Audit handles prod
+#   prisma migrate dev / deploy — legitimate; Deployment Script Audit handles startup scripts
 #   DELETE FROM without WHERE — common in test teardown, migration rollbacks
 #   TRUNCATE — common in test fixtures
 #   DROP TABLE — needs Risk Gate context to distinguish approved from unapproved
@@ -44,6 +48,16 @@ fi
 # DROP DATABASE or DROP SCHEMA (case-insensitive)
 if echo "$cmd" | grep -qiE 'DROP[[:space:]]+(DATABASE|SCHEMA)[[:space:]]+'; then
   blocked="${blocked}\n  → DROP DATABASE / DROP SCHEMA"
+fi
+
+# prisma migrate reset — always destructive (drops and recreates entire database)
+if echo "$cmd" | grep -qE 'prisma[[:space:]]+migrate[[:space:]]+reset'; then
+  blocked="${blocked}\n  → prisma migrate reset (drops and recreates entire database)"
+fi
+
+# prisma db push --force-reset — destructive variant
+if echo "$cmd" | grep -qE 'prisma[[:space:]]+db[[:space:]]+push.*--force-reset'; then
+  blocked="${blocked}\n  → prisma db push --force-reset (destructive schema reset)"
 fi
 
 if [ -n "$blocked" ]; then

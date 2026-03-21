@@ -177,6 +177,7 @@ HERALD asks: **Promote to plan, continue brainstorming, or discard?**
 - **For every `human` task, SA defines a `verification_checklist`** — specific, binary items the user will confirm. Never vague. Always precise and observable.
 - **For every `auto` task involving code execution, SA defines explicit acceptance criteria** — not just what to build, but what correct looks like. These criteria become the test_writer's brief verbatim. Vague criteria ("it works") are not acceptable.
 - **SA runs a dependency and architecture review before finalizing any plan involving code:** Does the proposed approach match the codebase's existing patterns? Are the proposed libraries proportionate to the task (flag if a simple task accumulates excessive dependencies)? Would a simpler approach meet the same criteria? SA must answer these questions in the plan.
+- **For any plan touching database schema, ORM models, or migration files, SA must add a mandatory checklist item:** "Audit all deployment scripts (`start.sh`, `Dockerfile`, `docker-compose*.yml`, `railway.json`, CI configs) for DDL commands that execute on startup or deploy (`prisma db push`, `migrate dev`, `migrate deploy`, `migrate reset`, `DROP`, `TRUNCATE`). Run grep mechanically. Block deploy if any are found." This item cannot be skipped or waived.
 - **SA must surface at least one genuine challenge to the proposed approach** — a risk, a hidden assumption, or a viable alternative the user should consider. This is mandatory even if the plan is strong. A plan with no challenges stated is incomplete.
 - SA estimates token cost for each plan option and includes it in the plan summary shown to the user at approval time.
 - SA produces one or more viable execution plans and returns them to HERALD
@@ -221,6 +222,16 @@ HERALD asks: **Promote to plan, continue brainstorming, or discard?**
 
 - If any pattern is matched: escalate `risk_level` to `destructive` regardless of the SA's original classification. Fire the Risk Gate before any execution step proceeds.
 - This scan runs on generated output — it catches cases where the task description looked safe but the implementation is destructive.
+
+**Deployment Script Audit (schema-touching plans):**
+- For any plan that touches a database schema, ORM model, migration file, or database configuration — regardless of whether those files were generated this session or are pre-existing — HERALD must run the following before any deployment task executes:
+  ```bash
+  grep -rE "prisma (db push|migrate dev|migrate deploy|migrate reset)|DROP TABLE|DROP DATABASE|TRUNCATE" \
+    start.sh Dockerfile docker-compose*.yml .railway.json railway.json .github/workflows/ 2>/dev/null
+  ```
+- If any match is found: surface it as a `destructive` risk before proceeding. The user must explicitly confirm or the deployment is blocked.
+- This is a mechanical check, not a behavioral one. HERALD runs the grep. It does not rely on the model's judgment about whether a pre-existing script is safe.
+- Deployment scripts to always check: `start.sh`, `Dockerfile`, `docker-compose*.yml`, `railway.json`, `.railway.json`, any CI/CD workflow files, any file referenced in a startup or deploy command.
 
 **Context Checkpoint:**
 - HERALD does not rely on `/compact`. It manages context proactively.
@@ -696,9 +707,10 @@ test_writer → code_agent → test_runner
 
 If `test_runner` fails → Failure Protocol applies. `code_agent` is re-briefed with specific failing assertions.
 
-**SA may waive this gate only for:**
-- Pure configuration or documentation changes
-- Tasks where writing tests costs more than the risk of not having them — SA must justify this explicitly in the plan
+**SA may waive this gate only under these conditions:**
+- Waivers are per-task only. SA may never waive the gate for an entire plan. A plan-level waiver bypasses dispatch entirely — no agents run, no scans fire, no gates exist. This is not a waiver; it is a full pipeline bypass and is never acceptable.
+- The only waivable tasks are: pure configuration changes, documentation-only changes, or tasks where the cost of writing tests demonstrably exceeds the risk of not having them. SA must state the justification explicitly in the plan checklist item.
+- Tasks involving database schema changes, ORM migrations, deployment configuration, or any file that executes on startup or deploy are **never waivable**. These tasks carry asymmetric downside risk that tests cannot be assumed away from.
 
 ---
 
@@ -974,5 +986,7 @@ HERALD is an instruction layer. Its gates — the Risk Gate, Test-First Gate, La
 - Destructive patterns in generated files (SQL migrations, scripts) — the Destructive Pattern Scan in Layer 5 handles these, but it is model-enforced
 - `DELETE FROM` without `WHERE`, `TRUNCATE`, `DROP TABLE` — too context-dependent for a hook to distinguish approved from unapproved operations without false positives
 - Any situation where the model skips a gate that requires user confirmation — the user is the enforcer there
+
+**The same-process problem:** HERALD and Claude Code are the same process. HERALD assumes it is a pure orchestrator dispatching to separate agents. In practice, it is the model that also writes files and runs commands. When dispatch is bypassed — through a plan-level test-first gate waiver, user pressure, or context collapse — HERALD ceases to exist as an orchestrator. All gates fail simultaneously because they are behavioral commitments of the entity that is now executing directly. No instruction can fix this. The mitigations are: (1) plan-level gate waivers are now explicitly prohibited, (2) the deployment script audit is a mechanical grep command rather than a behavioral judgment, (3) the hook blocks the worst Bash patterns regardless of model state.
 
 **The right mental model:** HERALD makes the right behavior explicit and likely. The hook catches the genuinely catastrophic Bash-level cases. Human approval gates are the reliable enforcement mechanism for everything in between. The system is as strong as the user's willingness to hold the gates.
