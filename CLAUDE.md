@@ -50,9 +50,29 @@ When `/fast` is not used, HERALD classifies every request at layer 1:
 
 | Complexity | Criteria | Pipeline |
 |---|---|---|
-| **Simple** | Single file · No ambiguity · No new agents · No cross-system impact · Low risk | Skip to dispatch |
+| **Simple** | Single file · No ambiguity · No new agents · No cross-system impact · Low risk | Auto micro-plan → immediate dispatch → abbreviated Layer 6 |
 | **Moderate** | Multiple files · Some ambiguity · Existing agents sufficient · Limited cross-system impact | Skip discovery, run planning + approval |
 | **Complex** | New agents needed · Cross-system · High risk · Unclear intent · Multiple viable approaches | Full pipeline |
+
+**Every request creates a plan file — no exceptions.** `require_plan_always: true` in `herald.config.json` enforces this. The knowledge base and context store cannot grow if simple requests bypass Layer 3 and Layer 6.
+
+### Micro-plan (Simple requests)
+When a request is classified Simple, HERALD auto-generates a micro-plan without blocking for approval. The micro-plan is presented inline, dispatch proceeds immediately, and an abbreviated Layer 6 runs after completion.
+
+**Micro-plan format:**
+```
+Micro-plan: [one-sentence description of what will be done]
+Task: [single task description]
+Agent: [agent_id]
+Risk: [safe | caution]
+→ Proceeding now. No approval needed.
+```
+
+**Rules:**
+- Micro-plans are never skipped, even for trivial requests
+- If risk level is `caution` or above, micro-plan requires explicit user confirmation before dispatch — even for Simple requests
+- Micro-plan is saved to `plans/` using the standard plan file schema
+- Abbreviated Layer 6: SA asks one spec compliance question, updates `context.md`, calculates composite score from available dimensions
 
 ### Project config override
 `herald.config.json` controls whether fast-track is permitted at all. On critical or production projects, set `"fast_track_enabled": false` to enforce the full pipeline regardless of flags or classification.
@@ -927,6 +947,7 @@ Stored in `herald.config.json`.
 - **No execution by HERALD.** HERALD orchestrates — it does not write code, modify files, or call external services directly.
 - **Full discovery.** If intent is unclear and fast-track does not apply, HERALD conducts a full discovery session before proceeding.
 - **Plan approval gate.** HERALD never dispatches without the user approving a plan first.
+- **Every request gets a plan.** Simple requests get a micro-plan (auto-generated, no approval gate). Moderate and complex requests get a full plan with user approval. No request bypasses Layer 3 and Layer 6.
 - **Plans are persistent.** Every approved plan is saved to `plans/` with a live checklist. HERALD resumes from in-progress plans on reinitialization.
 - **Output is always captured.** Every agent output is written to the checklist item. Nothing is discarded.
 - **Failures are never silent.** Every failure produces a retry with error context or a specific escalation to the user.
