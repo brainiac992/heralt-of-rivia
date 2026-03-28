@@ -18,69 +18,69 @@ AI coding agents left to their own devices guess at intent, execute without a pl
 
 HERALD is the orchestration layer that addresses these failures structurally.
 
-## What HERALD solves
+## How it works
 
-| Documented issue | Source | HERALD's fix |
-|---|---|---|
-| Weak plan mode — no persistence, no control | HN thread, 591 comments | Persistent JSON plan files, user-approved before any execution |
-| Binary permission model — all or nothing | Repeated pattern across HN + GitHub | Risk Gate with `safe / caution / destructive` classification per task |
-| Token bloat from over-broad context | Multiple independent workarounds built | Layer 4 scopes context to each agent only — nothing extra |
-| Transparency removed — "Read 3 files" tells you nothing | HN #4 ranking, 702 comments | Full output captured per checklist item — complete record of every action |
-| Code quality drift and over-engineered solutions | CodeRabbit: 1.7× more issues in AI PRs | Acceptance criteria defined before code is written; dependency review flags bloat |
-| Sycophancy — "You're absolutely right!" on everything | GitHub #3382, 874 upvotes | Every plan must include a genuine challenge; agreement is never the default |
-| Context rot — output degrades as sessions grow | Near-universal among heavy users | Proactive checkpoint at 75% context — SA summarizes state, clears noise, continues cleanly |
-| Destructive actions without warning | Production incidents at AWS, Replit, others | Risk Gate + Destructive Pattern Scan fires before any irreversible operation |
+Herald has two systems working as one: a **6-layer governance framework** and an **8-phase development pipeline**.
 
-## The pipeline
+### The 6 Layers (governance — runs on every request)
 
 ```
-1. Intent Engine      — domain detection, discovery, complexity classification
-2. Context Harvester  — load only what's relevant; resume in-progress plans
-3. Plan Architect     — SA produces plans with token estimates and genuine challenges; user selects one
-4. Prompt Synthesizer — scoped briefs per agent; no raw input passthrough
-5. Dispatch Router    — Risk Gate, Destructive Pattern Scan, Context Checkpoint, token tracking
-6. Feedback Loop      — mandatory scoring; SA updates context store; patterns stored at ≥ 95%
+Layer 1  Intent Engine        → What do you want? What domain? What complexity?
+Layer 2  Context Harvester    → What do we already know? Tech stack? In-progress plans?
+Layer 3  Plan Architect       → SA produces a plan, you approve it
+Layer 4  Prompt Synthesizer   → Herald writes scoped briefs for each agent
+                                (includes tech stack, languages, project conventions)
+Layer 5  Dispatch Router      → Agents execute. Safety gates fire here.
+Layer 6  Feedback Loop        → SA scores the outcome, updates context store
 ```
+
+### The 8 Phases (pipeline — runs inside Layer 5 when triggered)
+
+```
+Phase 1  Planning        PM → BA → PO → PM Summary → Architect    [ALWAYS]
+Phase 2  Design          UI-Designer + Content-Writer               [if UI changes]
+Phase 3  Development     DB-Agent → Backend → Frontend              [as needed]
+Phase 4  Testing         UI-Tester + QA-Happy + QA-Breaker + Security  [after Phase 3]
+Phase 5  Data Review     Data-Agent                                 [if schema changes]
+Phase 6  Marketing       Marketing-Agent + Content-Auditor          [if customer-facing]
+Phase 7  Documentation   DOC-Agent → Commit                        [ALWAYS]
+Phase 8  Post-Release    Post-Release-Agent                         [after deploy]
+```
+
+**Not all phases run.** The Architect (end of Phase 1) declares what the feature touches, and Herald activates only the relevant phases. Minimum: Phase 1 + 7. Maximum: all 8.
+
+### Domain-agnostic agents
+
+All 19 pipeline agents define **roles and workflows**, not tech stacks. Project-specific context (frameworks, languages, deployment platform, supported locales) is captured by the PM interview and detected by Layer 2 from the codebase, then passed to agents via Layer 4 briefs. This makes Herald portable across any project.
+
+### User stories and acceptance criteria
+
+The PO (Product Owner) agent converts the SRS into user stories with testable acceptance criteria, stored as a JSON checklist:
+
+1. **PO writes stories** — each criterion marked `auto` (code-testable) or `human` (needs user eyes)
+2. **QA agents verify** — Phase 4 agents verify `auto` criteria and update the checklist
+3. **Users verify** — `human` criteria are flagged for user confirmation
+4. A story is `passed` only when ALL its criteria are `passed`
 
 ## Safety & quality gates
 
-**Risk Gate** — before any `destructive` task executes, HERALD surfaces what could be lost, the safe default, and the risky alternative. Silence always takes the safe default.
+| Gate | What it does |
+|---|---|
+| **Risk Gate** | Pauses before destructive ops. Surfaces what could be lost. Silence = safe default. |
+| **Destructive Pattern Scan** | Greps generated files for DROP/TRUNCATE/rm -rf before execution |
+| **Test-First Gate** | Forces test → code → test sequence on code tasks |
+| **Human Verification Gate** | User confirms UI/visual output before proceeding |
+| **Context Checkpoint** | Auto-saves state at 75% context usage |
+| **Anti-Sycophancy** | Every plan must include a genuine challenge |
 
-**Destructive Pattern Scan** — after an agent generates artifacts (SQL, migrations, shell scripts), HERALD scans for `DROP TABLE`, `TRUNCATE`, `DELETE FROM` without `WHERE`, `rm -rf`, and similar patterns before execution. Catches cases where the task description looked safe but the generated code isn't.
+## Commands
 
-**Test-First Gate** — for every logic or API task: `test_writer → code_agent → test_runner`. Acceptance criteria are encoded as tests before any implementation begins.
-
-**Human Verification Gate** — for UI, visual design, and UX tasks: HERALD presents a binary checklist to the user before continuing dispatch.
-
-**Context Checkpoint** — at 75% context usage, SA writes a compact state summary to `context.md` and the plan file, clears non-essential history, and continues. Never relies on `/compact`.
-
-**Anti-sycophancy** — every plan must include at least one genuine challenge — a risk, a hidden assumption, or a viable alternative. "This looks good" alone is never sufficient.
-
-## Modes
-
-| Mode | Activation | What it does |
-|---|---|---|
-| **Fast-track** | `/fast [request]` | Skips discovery and context loading — jumps straight to planning |
-| **Brainstorm** | `/brainstorm [topic]` | Structured thinking mode: Critique → Design → Benchmark → Recommend. No dispatch. Output can be promoted to a real plan. |
-| **Score** | `/score` | Manually triggers Layer 6 if it was missed — runs full scoring, updates context store, conditionally stores pattern |
-
-## Architecture
-
-```
-User
-  ↕
-HERALD (orchestrator — sole cross-system authority)
-  ↕              ↕               ↕
- SA        Agent Builder    Task Agents
-```
-
-All communication routes through HERALD. No agent communicates with another agent directly.
-
-| Agent | Spawn type | Scope |
-|---|---|---|
-| **SA** | Dominant | Validate specs, plan, classify, score, update context store |
-| **Agent Builder** | Dominant | Build new agents to spec |
-| **Task agents** | Temporal or Dominant | Execute one defined task. Nothing else. |
+| Command | What it does |
+|---|---|
+| `/fast [request]` | Skips discovery — jumps to planning. Plan approval still required. |
+| `/brainstorm [topic]` | Structured thinking: Critique → Design → Benchmark → Recommend. No dispatch. |
+| `/score` | Manually triggers Layer 6 if missed. Runs scoring against last completed plan. |
+| `/agents` | Lists all registered agents with phase and status. Shows active plan progress. |
 
 ## Quickstart
 
@@ -101,26 +101,58 @@ cp herald-tmp/CLAUDE.md your-project/CLAUDE.md
 cp herald-tmp/herald.config.json your-project/herald.config.json
 cp herald-tmp/agent-registry.json your-project/agent-registry.json
 cp herald-tmp/knowledge-base.json your-project/knowledge-base.json
-mkdir -p your-project/plans your-project/.claude/commands
-cp herald-tmp/.claude/commands/* your-project/.claude/commands/
+cp herald-tmp/context.md your-project/context.md
+cp herald-tmp/pipeline.md your-project/pipeline.md
+cp herald-tmp/domain-library.md your-project/domain-library.md
+cp -r herald-tmp/.claude your-project/.claude
+mkdir -p your-project/plans
 ```
 
-Open in Claude Code. HERALD activates on the next request.
+Open in Claude Code. HERALD activates on the next request. The PM will interview you about your tech stack and supported languages before any implementation begins.
+
+**Option C — Install from within Claude Code:**
+
+```
+/install-herald
+```
 
 ## Files
 
 | File | Purpose |
 |---|---|
-| `CLAUDE.md` | Full HERALD spec — drop-in activation file |
-| `herald.config.json` | Fast-track, brainstorm, token budget, pipeline config |
-| `agent-registry.json` | Registry of all dominant agents |
+| `CLAUDE.md` | Master spec — layers, gates, rules, pipeline integration |
+| `pipeline.md` | Pipeline orchestration — phases, triggers, selection table |
+| `herald.config.json` | Runtime config — fast-track, token budget, pipeline phases |
+| `agent-registry.json` | Agent lookup table (id + status + phase) |
 | `knowledge-base.json` | Patterns from scored executions (grows over time) |
-| `context.md` | Session context store — decisions, constraints, failed approaches |
-| `.claude/commands/brainstorm.md` | `/brainstorm` slash command |
-| `.claude/commands/score.md` | `/score` slash command |
-| `plans/` | Created at runtime — approved plans with live checklists |
+| `context.md` | Institutional memory — decisions, constraints, failed approaches |
+| `domain-library.md` | 24 domain constraint checklists for Layer 1 |
+| `.claude/agent-conventions.md` | Shared agent rules — severity scale, doc paths, completion format |
+| `.claude/agents/` | 19 agent instruction files (one per pipeline role) |
+| `.claude/commands/` | Slash commands — `/agents`, `/brainstorm`, `/score`, `/install-herald` |
+| `.claude/hooks/` | Safety hooks — blocks `rm -rf` and `DROP DATABASE` at tool level |
+| `plans/` | Persistent plan files (created at runtime) |
+| `docs/` | Pipeline output organized per feature (created at runtime) |
 | `examples/` | Sample handoff, plan, and pattern files |
-| `export/herald.html` | Full visual presentation (open in browser) |
+| `export/herald.html` | Visual presentation (open in browser) |
+
+## Agents (21 total)
+
+**Core (2):** SA (planning + scoring), Agent Builder (creates new agents)
+
+**Pipeline (19):**
+
+| Phase | Agents |
+|---|---|
+| 1 — Planning | PM, BA, PO, Architect |
+| 2 — Design | UI-Designer, Content-Writer |
+| 3 — Development | DB-Agent, Backend-Agent, Frontend-Agent |
+| 4 — Testing | UI-Tester, QA-Happy, QA-Breaker, Security-Agent |
+| 5 — Data Review | Data-Agent |
+| 6 — Marketing | Marketing-Agent, Content-Auditor |
+| 7 — Documentation | DOC-Agent |
+| 8 — Post-Release | Post-Release-Agent |
+| Standalone | DevOps-Agent |
 
 ## Core rules
 
@@ -131,19 +163,19 @@ Open in Claude Code. HERALD activates on the next request.
 - Destructive tasks are flagged at plan approval, not at execution
 - Silence is safe — no stated preference means safe default, always
 - Layer 6 is mandatory — no execution closes without scoring
-- Patterns are only stored when composite score ≥ 95%
+- Patterns are only stored when composite score >= 95%
 
 ## Architectural limits
 
-HERALD is an instruction layer. Its gates are instructions read and followed by the same model that executes the work. Under context pressure — long sessions, approaching token limits, a user bypassing a gate — the model may comply and skip enforcement. This is a fundamental property of instruction-following systems, not a flaw unique to HERALD.
+HERALD is an instruction layer. Its gates are behavioral commitments of the same model that executes the work. Under context pressure, long sessions, or user bypass, the model may skip enforcement.
 
-**What is reliable:** Human-in-the-loop gates (plan approval, Risk Gate) require explicit user confirmation and do not depend on model compliance. Plan files and `context.md` create recoverable state. `/score` provides a recovery path when Layer 6 is missed.
+**Reliable:** Human-in-the-loop gates (plan approval, Risk Gate) — require explicit user confirmation. Plan files and `context.md` create recoverable state. `/score` recovers missed Layer 6.
 
-**What the hook provides:** `.claude/hooks/herald-safety.sh` blocks `rm -rf` and `DROP DATABASE / DROP SCHEMA` at the Bash tool level — before the model has any opportunity to comply or not comply. This fires regardless of model behavior, context length, or user pressure.
+**Hook-enforced:** `.claude/hooks/herald-safety.sh` blocks `rm -rf` and `DROP DATABASE/SCHEMA` at the Bash tool level, regardless of model state.
 
-**What the hook does not cover:** Destructive patterns in generated files, `DELETE FROM` without `WHERE`, `TRUNCATE`, `DROP TABLE` — too context-dependent for a hook to distinguish approved from unapproved without false positives. The Destructive Pattern Scan in Layer 5 handles these, but it is model-enforced.
+**Model-enforced:** Test-First Gate, Destructive Pattern Scan, Context Checkpoint, anti-sycophancy. These depend on model compliance and may degrade under pressure.
 
-**The right mental model:** HERALD makes the right behavior explicit and likely. The hook catches catastrophic Bash-level cases. Human approval gates are the reliable enforcement mechanism for everything in between. The system is as strong as the user's willingness to hold the gates.
+The system is as strong as the user's willingness to hold the gates.
 
 ## Contributing
 
