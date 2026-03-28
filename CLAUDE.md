@@ -577,7 +577,7 @@ Stored in `plans/`. One file per approved plan. Created at end of layer 3, updat
 
 ## Agent Registry
 
-Stored in `agent-registry.json`. Maintained exclusively by HERALD. Contains core agents (SA, Agent Builder) and all 18 pipeline agents with phase assignments. See the file directly for the full registry.
+Stored in `agent-registry.json`. Maintained exclusively by HERALD. Contains core agents (SA, Agent Builder) and all 19 pipeline agents with phase assignments. See the file directly for the full registry.
 
 ---
 

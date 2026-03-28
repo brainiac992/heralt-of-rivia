@@ -23,7 +23,7 @@
   "herald_pipeline": {
     "enabled": true,
     "phases": {
-      "1_planning": { "required": true, "steps": ["pm_brief", "ba", "pm_summary", "architect"] },
+      "1_planning": { "required": true, "steps": ["pm_brief", "ba", "po", "pm_summary", "architect"] },
       "2_design": { "required": false, "condition": "ui_changes", "agents": ["ui_designer", "content_writer"], "execution": "parallel" },
       "3_development": { "required": false, "steps": ["db_agent", "backend_agent", "frontend_agent"], "execution": "sequential" },
       "4_testing": { "required": false, "condition": "any_phase_3", "agents": ["ui_tester", "qa_happy", "qa_breaker", "security_agent"], "execution": "parallel", "max_rounds": 3 },
