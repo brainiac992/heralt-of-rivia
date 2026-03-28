@@ -581,10 +581,10 @@
   <p>HERALD sits between human input and every downstream agent. It runs discovery, manages planning, controls the agent lifecycle, dispatches work, tracks execution state, and learns from every execution.</p>
 
   <div class="stat-row">
-    <div class="stat-card"><div class="stat-num">6</div><div class="stat-label">Pipeline Layers</div></div>
-    <div class="stat-card"><div class="stat-num"><span>95</span>%</div><div class="stat-label">Success Threshold</div></div>
+    <div class="stat-card"><div class="stat-num">6</div><div class="stat-label">Governance Layers</div></div>
+    <div class="stat-card"><div class="stat-num"><span>8</span></div><div class="stat-label">Pipeline Phases</div></div>
+    <div class="stat-card"><div class="stat-num">21</div><div class="stat-label">Agents (19 pipeline + 2 core)</div></div>
     <div class="stat-card"><div class="stat-num">6</div><div class="stat-label">Safety &amp; Quality Gates</div></div>
-    <div class="stat-card"><div class="stat-num"><span>8</span></div><div class="stat-label">Documented Issues Fixed</div></div>
   </div>
 </div>
 
@@ -711,9 +711,83 @@
       <div class="agent-scope">Build new agents to spec — purpose, scope, spawn type, and instructions</div>
     </div>
     <div class="agent-card temporal">
-      <div class="agent-name">Task Agents</div>
+      <div class="agent-name">Pipeline Agents (19)</div>
       <div class="agent-badge">Temporal or Dominant</div>
-      <div class="agent-scope">Execute one defined task. Nothing else. Scope never expands.</div>
+      <div class="agent-scope">Domain-agnostic roles: PM, BA, PO, Architect, UI-Designer, Content-Writer, DB-Agent, Backend, Frontend, QA (4), Data, Marketing, Content-Auditor, DOC, Post-Release, DevOps</div>
+    </div>
+  </div>
+
+  <div class="callout">
+    <p><strong>Agents are domain-agnostic.</strong> They define roles and workflows, not tech stacks. Project-specific context — frameworks, languages, deployment platform, supported locales — is detected by Layer 2 from the codebase and passed to agents via Layer 4 briefs. This makes Herald portable across any project.</p>
+  </div>
+</div>
+
+<!-- ══════════ HERALD PIPELINE ══════════ -->
+<div class="section page-break">
+  <div class="section-label"><div class="dot"></div><h2>The Herald Pipeline</h2></div>
+  <div class="section-divider"></div>
+  <p>An 8-phase development pipeline that runs as a specialized dispatch pattern inside Layer 5. Not all phases run — the Architect (end of Phase 1) declares what the feature touches, and Herald activates only the relevant phases.</p>
+
+  <table class="complexity-table" style="border-spacing:0 10px">
+    <thead><tr><th>Phase</th><th>Name</th><th>Agents</th><th>Condition</th></tr></thead>
+    <tbody>
+      <tr class="complex"><td style="font-weight:800">1</td><td style="font-weight:600">Planning</td><td style="font-size:13px">PM → BA → PO → PM Summary → Architect</td><td style="font-size:13px;color:#065F46;font-weight:600">ALWAYS</td></tr>
+      <tr class="moderate"><td style="font-weight:800">2</td><td style="font-weight:600">Design</td><td style="font-size:13px">UI-Designer + Content-Writer (parallel)</td><td style="font-size:13px">If UI changes</td></tr>
+      <tr class="moderate"><td style="font-weight:800">3</td><td style="font-weight:600">Development</td><td style="font-size:13px">DB-Agent → Backend → Frontend (as needed)</td><td style="font-size:13px">As needed</td></tr>
+      <tr class="moderate"><td style="font-weight:800">4</td><td style="font-weight:600">Testing</td><td style="font-size:13px">UI-Tester + QA-Happy + QA-Breaker + Security (parallel)</td><td style="font-size:13px">After any Phase 3</td></tr>
+      <tr class="simple"><td style="font-weight:800">5</td><td style="font-weight:600">Data Review</td><td style="font-size:13px">Data-Agent</td><td style="font-size:13px">If schema changes</td></tr>
+      <tr class="simple"><td style="font-weight:800">6</td><td style="font-weight:600">Marketing</td><td style="font-size:13px">Marketing-Agent + Content-Auditor (parallel)</td><td style="font-size:13px">If customer-facing</td></tr>
+      <tr class="complex"><td style="font-weight:800">7</td><td style="font-weight:600">Documentation</td><td style="font-size:13px">DOC-Agent → Commit</td><td style="font-size:13px;color:#065F46;font-weight:600">ALWAYS</td></tr>
+      <tr class="simple"><td style="font-weight:800">8</td><td style="font-weight:600">Post-Release</td><td style="font-size:13px">Post-Release-Agent</td><td style="font-size:13px">After deploy confirmed</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout">
+    <p><strong>Minimum pipeline:</strong> Phase 1 + Phase 7 (planning + documentation). <strong>Maximum pipeline:</strong> All 8 phases. The Architect's ADR determines which phases activate based on what the feature touches.</p>
+  </div>
+</div>
+
+<!-- ══════════ PO & ACCEPTANCE CRITERIA ══════════ -->
+<div class="section">
+  <div class="section-label"><div class="dot"></div><h2>User Stories &amp; Acceptance Criteria</h2></div>
+  <div class="section-divider"></div>
+  <p>The Product Owner (PO) agent converts the SRS into user stories with testable acceptance criteria. QA agents verify against these criteria and mark them passed or failed. Users verify <code>human</code> criteria directly.</p>
+
+  <div class="fast-cards">
+    <div class="fast-card">
+      <div class="fc-icon" style="background:#EFF6FF">1</div>
+      <div class="fc-title">PO Writes Stories</div>
+      <p class="fc-desc">Reads the SRS, breaks it into user stories. Each story gets binary, testable acceptance criteria classified as <strong>auto</strong> (code-testable) or <strong>human</strong> (needs user eyes). Saved as JSON checklist.</p>
+    </div>
+    <div class="fast-card">
+      <div class="fc-icon" style="background:#F0FDF4">2</div>
+      <div class="fc-title">QA Verifies</div>
+      <p class="fc-desc">Phase 4 QA agents read the checklist, verify <strong>auto</strong> criteria, and update each to <code>passed</code> or <code>failed</code>. <strong>Human</strong> criteria are flagged for user verification.</p>
+    </div>
+    <div class="fast-card">
+      <div class="fc-icon" style="background:#FFFBEB">3</div>
+      <div class="fc-title">Story = Passed</div>
+      <p class="fc-desc">A user story is <code>passed</code> only when <strong>ALL</strong> its acceptance criteria are <code>passed</code>. Users can mark <code>human</code> criteria at any time.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ PROJECT CONTEXT ══════════ -->
+<div class="section">
+  <div class="section-label"><div class="dot"></div><h2>Project Context</h2></div>
+  <div class="section-divider"></div>
+  <p>Before implementation begins, the PM interview captures two critical pieces of project context that flow to all downstream agents via Layer 4 briefs:</p>
+
+  <div class="fast-cards" style="grid-template-columns: repeat(2, 1fr)">
+    <div class="fast-card">
+      <div class="fc-icon" style="background:#F5F3FF">T</div>
+      <div class="fc-title">Tech Stack</div>
+      <p class="fc-desc">Frontend framework, backend framework, database, ORM, deployment platform. Or "follow existing codebase conventions" if extending a project. Herald detects conventions from the codebase at Layer 2.</p>
+    </div>
+    <div class="fast-card">
+      <div class="fc-icon" style="background:#EFF6FF">L</div>
+      <div class="fc-title">Supported Languages</div>
+      <p class="fc-desc">Which languages the UI supports and whether any require RTL layout. No hardcoded defaults — you specify exactly what you need. Content-Writer and Content-Auditor use this for translation tables.</p>
     </div>
   </div>
 </div>
@@ -837,22 +911,27 @@
 <div class="section">
   <div class="section-label"><div class="dot"></div><h2>Modes</h2></div>
   <div class="section-divider"></div>
-  <p>Three slash commands that change how HERALD operates — without changing the pipeline's safety guarantees.</p>
-  <div class="fast-cards">
+  <p>Four slash commands that change how HERALD operates — without changing the pipeline's safety guarantees.</p>
+  <div class="fast-cards" style="grid-template-columns: repeat(4, 1fr)">
     <div class="fast-card">
       <div class="fc-icon" style="background:#EFF6FF">⚡</div>
       <div class="fc-title">/fast</div>
-      <p class="fc-desc">Skips discovery and context loading. Jumps straight to SA planning. Plan approval is never skipped. Use for low-risk, well-understood tasks.</p>
+      <p class="fc-desc">Skips discovery and context loading. Jumps straight to SA planning. Plan approval is never skipped.</p>
     </div>
     <div class="fast-card">
       <div class="fc-icon" style="background:#F5F3FF">🧠</div>
       <div class="fc-title">/brainstorm</div>
-      <p class="fc-desc">Structured thinking mode. Runs <strong>Critique → Design → Benchmark → Recommend</strong>. No agents dispatched, no plan created. Output can be promoted to a real plan.</p>
+      <p class="fc-desc">Structured thinking: <strong>Critique → Design → Benchmark → Recommend</strong>. No dispatch. Can be promoted to a real plan.</p>
     </div>
     <div class="fast-card">
       <div class="fc-icon" style="background:#F0FDF4">✓</div>
       <div class="fc-title">/score</div>
-      <p class="fc-desc">Manually triggers Layer 6 if it was missed. Runs full scoring against the last completed plan — updates context store and conditionally stores pattern.</p>
+      <p class="fc-desc">Manually triggers Layer 6 if missed. Runs full scoring against the last completed plan.</p>
+    </div>
+    <div class="fast-card">
+      <div class="fc-icon" style="background:#FFFBEB">📋</div>
+      <div class="fc-title">/agents</div>
+      <p class="fc-desc">Lists all registered agents with their phase and status. Shows active plan progress if one exists.</p>
     </div>
   </div>
 </div>
@@ -947,7 +1026,7 @@
         <ul>
           <li>SA analyzes project structure and checks <code>agent-registry.json</code></li>
           <li>SA classifies every task by <strong>risk level</strong> (safe / caution / destructive) and <strong>verification type</strong> (auto / human / none)</li>
-          <li>SA defines explicit acceptance criteria per task — not just what to build, but what correct looks like</li>
+          <li>SA coordinates Phase 1 sequence: PM → BA → PO (user stories + AC) → PM Summary → Architect</li>
           <li>SA runs dependency and architecture review — flags over-engineered approaches before any code is written</li>
           <li>SA must surface at least one genuine challenge per plan — a risk, assumption, or alternative</li>
           <li>SA estimates token cost for each plan option — shown at approval time</li>
@@ -962,8 +1041,8 @@
         <h3>Prompt Synthesizer</h3>
         <ul>
           <li>HERALD writes a precise brief for each agent: objective, context, constraints, output spec, KB patterns</li>
-          <li>Context scoped to each agent only — nothing extra</li>
-          <li>No raw user input is ever passed to an agent</li>
+          <li>Briefs include project-specific context: tech stack, supported languages, codebase conventions</li>
+          <li>Context scoped to each agent only — nothing extra. No raw user input is ever passed.</li>
         </ul>
       </div>
     </div>
@@ -1224,7 +1303,11 @@
     <span class="key">"success_threshold"</span>:    <span class="num">95</span>,
     <span class="key">"default_max_retries"</span>:  <span class="num">2</span>
   },
-  <span class="key">"version"</span>: <span class="str">"1.0"</span>
+  <span class="key">"herald_pipeline"</span>: {
+    <span class="key">"enabled"</span>: <span class="bool">true</span>,
+    <span class="key">"phases"</span>: { <span class="comment">// 8 phases with conditions, agents, execution mode</span> }
+  },
+  <span class="key">"version"</span>: <span class="str">"2.0"</span>
 }</div>
   </div>
 
@@ -1249,7 +1332,7 @@
       <span class="key">"retries"</span>: <span class="num">0</span>, <span class="key">"token_cost"</span>: <span class="num">420</span>
     }
   ],
-  <span class="key">"version"</span>: <span class="str">"1.0"</span>, <span class="key">"last_updated"</span>: <span class="bool">null</span>
+  <span class="key">"version"</span>: <span class="str">"2.0"</span>, <span class="key">"last_updated"</span>: <span class="bool">null</span>
 }</div>
   </div>
 </div>

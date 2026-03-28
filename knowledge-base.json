@@ -1,5 +1,21 @@
 {
   "patterns": [],
-  "version": "1.0",
-  "last_updated": null
+  "version": "2.0",
+  "last_updated": null,
+  "_schema_reference": {
+    "input_pattern": "short description of the type of request",
+    "engineered_prompt": "the brief that worked",
+    "agents_used": ["agent_a", "agent_b"],
+    "plan_id": "2026-03-17_short-task-description",
+    "score": {
+      "composite": 95,
+      "spec_compliance": 95,
+      "scope_adherence": 100,
+      "technical_correctness": 95,
+      "execution_efficiency": 90
+    },
+    "retries": 0,
+    "token_cost": 420,
+    "notes": "any relevant context for future use"
+  }
 }

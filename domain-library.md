@@ -2,11 +2,13 @@
 
 HERALD matches requests against this library at the start of Layer 1. Each domain defines the constraint questions that must be answered before any technical decision is made. This library is not exhaustive — when HERALD encounters a domain not listed here, it constructs a relevant constraint checklist from first principles and documents it in `context.md` for future sessions.
 
+**Scope note:** This library is provided for any system Herald orchestrates. Not every feature requires a domain constraint checklist — apply domain questions only when the feature touches that domain (e.g., payments → Payments & E-commerce, employee data → HR & Workforce).
+
 ---
 
 ## Universal Constraint Dimensions
 
-These apply to **every request** after domain-specific questions are answered. HERALD asks these unless the answer is already obvious from context or the user has confirmed they are not applicable.
+These apply to **every request after domain-specific questions**. They are asked unless the answer is already obvious from context or the user has confirmed they are not applicable. See CLAUDE.md Layer 1 for the full Intent Engine flow.
 
 | Dimension | Question | Blocker? |
 |---|---|---|

@@ -1,22 +1,27 @@
 {
   "agents": [
-    {
-      "id": "sa",
-      "name": "Systems & Business Analyst",
-      "scope": "Validate specs, plan execution, classify agents needed, score outcomes",
-      "spawn_type": "dominant",
-      "status": "active",
-      "created": "2026-03-17"
-    },
-    {
-      "id": "agent_builder",
-      "name": "Agent Builder",
-      "scope": "Build new agents to spec — purpose, scope, spawn type, and instructions",
-      "spawn_type": "dominant",
-      "status": "active",
-      "created": "2026-03-17"
-    }
+    { "id": "sa", "status": "active", "spawn_type": "dominant", "created": "2026-03-17" },
+    { "id": "agent_builder", "status": "active", "spawn_type": "dominant", "created": "2026-03-17" },
+    { "id": "pm", "status": "active", "spawn_type": "dominant", "phase": "1", "created": "2026-03-27" },
+    { "id": "ba", "status": "active", "spawn_type": "dominant", "phase": "1", "created": "2026-03-27" },
+    { "id": "po", "status": "active", "spawn_type": "dominant", "phase": "1", "created": "2026-03-28" },
+    { "id": "architect", "status": "active", "spawn_type": "dominant", "phase": "1", "created": "2026-03-27" },
+    { "id": "ui_designer", "status": "active", "spawn_type": "temporal", "phase": "2", "created": "2026-03-27" },
+    { "id": "content_writer", "status": "active", "spawn_type": "temporal", "phase": "2", "created": "2026-03-27" },
+    { "id": "db_agent", "status": "active", "spawn_type": "temporal", "phase": "3", "created": "2026-03-27" },
+    { "id": "backend_agent", "status": "active", "spawn_type": "temporal", "phase": "3", "created": "2026-03-27" },
+    { "id": "frontend_agent", "status": "active", "spawn_type": "temporal", "phase": "3", "created": "2026-03-27" },
+    { "id": "ui_tester", "status": "active", "spawn_type": "temporal", "phase": "4", "created": "2026-03-27" },
+    { "id": "qa_happy", "status": "active", "spawn_type": "temporal", "phase": "4", "created": "2026-03-27" },
+    { "id": "qa_breaker", "status": "active", "spawn_type": "temporal", "phase": "4", "created": "2026-03-27" },
+    { "id": "security_agent", "status": "active", "spawn_type": "temporal", "phase": "4", "created": "2026-03-27" },
+    { "id": "data_agent", "status": "active", "spawn_type": "temporal", "phase": "5", "created": "2026-03-27" },
+    { "id": "marketing_agent", "status": "active", "spawn_type": "temporal", "phase": "6", "created": "2026-03-27" },
+    { "id": "content_auditor", "status": "active", "spawn_type": "temporal", "phase": "6", "created": "2026-03-27" },
+    { "id": "doc_agent", "status": "active", "spawn_type": "temporal", "phase": "7", "created": "2026-03-27" },
+    { "id": "post_release_agent", "status": "active", "spawn_type": "temporal", "phase": "8", "created": "2026-03-27" },
+    { "id": "devops_agent", "status": "active", "spawn_type": "temporal", "phase": "standalone", "created": "2026-03-27" }
   ],
-  "version": "1.0",
-  "last_updated": null
+  "version": "2.0",
+  "last_updated": "2026-03-27"
 }
