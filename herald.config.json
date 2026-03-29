@@ -12,7 +12,7 @@
     "enabled": true,
     "soft_limit": 50000,
     "warn_at": 0.75,
-    "context_checkpoint_at": 0.75
+    "context_checkpoint_at": 0.60
   },
   "pipeline": {
     "require_plan_approval": true,

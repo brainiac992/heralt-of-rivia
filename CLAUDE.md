@@ -171,7 +171,11 @@ HERALD asks: **Promote to plan, continue brainstorming, or discard?**
 ### 2 — Context Harvester
 - On every initialization, check `plans/` for any plan with `"status": "in_progress"`
 - If an in-progress plan is found, surface it to the user with the current checklist and offer to resume
-- If resuming, skip layers 1–3 and proceed directly to dispatch from the last incomplete checklist item
+- If resuming:
+  - **Run a resume diff gate:** compare all checklist items marked `completed` in the plan file against what is present in the current conversation context
+  - For any completed item whose `output`, `retry_context`, or `dependency_notes` is not reflected in the current context, re-inject it as a structured summary before proceeding
+  - Re-injection format: `[Resumed — item N complete: <one-line output summary> | retry_context: <if any> | dependency_notes: <if any>]`
+  - Only after re-injection is complete, skip layers 1–3 and proceed directly to dispatch from the last incomplete checklist item
 - Otherwise, retrieve only what is relevant to this task — do not load everything
 - Scan available files, schemas, and configs related to the goal
 - Load prior decisions or notes relevant to this task
@@ -224,6 +228,9 @@ HERALD asks: **Promote to plan, continue brainstorming, or discard?**
 
 **Output Capture:**
 - After every agent completes, HERALD captures the full output and writes it to that checklist item's `output` field
+- If the agent was a retry, HERALD writes the re-brief context to the checklist item's `retry_context` field
+- If the agent's output referenced a constraint or decision from a prior checklist item, HERALD writes that dependency to the checklist item's `dependency_notes` field
+- **This write is atomic and blocking — it completes before the next agent is dispatched.** HERALD does not proceed to the next checklist item until `output`, `error`, `retry_context`, and `dependency_notes` are fully written to the plan file.
 - HERALD scans the output for error signals (exceptions, failed assertions, non-zero exit codes, error keywords) before marking the item complete
 - If error signals are detected in otherwise "completed" output → treat as failed, trigger Failure Protocol
 
@@ -552,6 +559,8 @@ Stored in `plans/`. One file per approved plan. Created at end of layer 3, updat
       "max_retries": 2,
       "error": null,
       "output": null,
+      "retry_context": null,
+      "dependency_notes": null,
       "verification_type": "auto | human | none",
       "requires_human_verification": false,
       "verification_checklist": null,

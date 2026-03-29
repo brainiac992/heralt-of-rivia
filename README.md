@@ -84,7 +84,28 @@ The PO (Product Owner) agent converts the SRS into user stories with testable ac
 
 ## Quickstart
 
-**Option A — Use HERALD as your project starter:**
+### Step 1 — Bootstrap (run once, any machine)
+
+This adds `/install-herald` to Claude Code globally so you can install HERALD into any project from inside Claude Code:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/brainiac992/herald-of-rivia/main/bootstrap.sh | bash
+```
+
+After this, `/install-herald` is available in every Claude Code session on your machine.
+
+---
+
+### Step 2 — Install into a project
+
+**Option A — From inside Claude Code (recommended after bootstrapping):**
+
+Open any project in Claude Code and run:
+```
+/install-herald
+```
+
+**Option B — Use HERALD as your project starter:**
 
 ```bash
 git clone https://github.com/brainiac992/herald-of-rivia.git my-project
@@ -92,7 +113,7 @@ cd my-project
 # Open in Claude Code — HERALD is already active
 ```
 
-**Option B — Add HERALD to an existing project:**
+**Option C — Add HERALD to an existing project manually:**
 
 ```bash
 git clone https://github.com/brainiac992/herald-of-rivia.git herald-tmp

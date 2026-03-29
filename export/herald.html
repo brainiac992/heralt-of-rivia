@@ -1337,6 +1337,48 @@
   </div>
 </div>
 
+<!-- ══════════ GETTING STARTED ══════════ -->
+<div class="section">
+  <div class="section-label"><div class="dot" style="background:var(--green)"></div><h2>Getting Started</h2></div>
+  <div class="section-divider"></div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:28px">
+
+    <div style="background:var(--white);border:1px solid var(--gray-200);border-radius:12px;padding:28px;border-top:3px solid var(--cyan)">
+      <div style="font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--cyan);margin-bottom:10px">Step 1 — Bootstrap</div>
+      <p style="margin-bottom:14px;color:var(--gray-600)">Run once on any machine. Adds <code>/install-herald</code> to Claude Code globally so you can install HERALD into any project.</p>
+      <div class="schema-card" style="margin:0">
+        <div class="schema-header">
+          <div class="schema-dot" style="background:#EF4444"></div>
+          <div class="schema-dot" style="background:#F59E0B"></div>
+          <div class="schema-dot" style="background:#10B981"></div>
+          <div class="sh-title">terminal</div>
+        </div>
+        <div class="schema-body" style="font-size:13px">curl -fsSL https://raw.githubusercontent.com/brainiac992/herald-of-rivia/main/bootstrap.sh | bash</div>
+      </div>
+    </div>
+
+    <div style="background:var(--white);border:1px solid var(--gray-200);border-radius:12px;padding:28px;border-top:3px solid var(--blue)">
+      <div style="font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--blue);margin-bottom:10px">Step 2 — Install into a project</div>
+      <p style="margin-bottom:14px;color:var(--gray-600)">Open any project in Claude Code and run the command. HERALD clones the repo, copies all files, and activates on the next request.</p>
+      <div class="schema-card" style="margin:0">
+        <div class="schema-header">
+          <div class="schema-dot" style="background:#EF4444"></div>
+          <div class="schema-dot" style="background:#F59E0B"></div>
+          <div class="schema-dot" style="background:#10B981"></div>
+          <div class="sh-title">Claude Code</div>
+        </div>
+        <div class="schema-body" style="font-size:13px">/install-herald</div>
+      </div>
+    </div>
+
+  </div>
+
+  <div style="background:var(--gray-100);border-radius:10px;padding:20px 24px;border-left:3px solid var(--gray-400)">
+    <p style="font-size:13px;color:var(--gray-600);margin:0"><strong>Alternative — clone directly:</strong> &nbsp;<code>git clone https://github.com/brainiac992/herald-of-rivia.git my-project</code> &nbsp;and open in Claude Code. HERALD is already active.</p>
+  </div>
+</div>
+
 <!-- ══════════ ARCHITECTURAL LIMITS ══════════ -->
 <div class="section">
   <div class="section-label"><div class="dot" style="background:var(--amber)"></div><h2>Architectural Limits</h2></div>
